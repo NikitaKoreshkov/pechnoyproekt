@@ -1,0 +1,254 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+
+interface FAQItem {
+  id: string
+  question: string
+  answer: string
+  category: string
+  isPopular?: boolean
+}
+
+const faqItems: FAQItem[] = [
+  {
+    id: 'faq-1',
+    question: 'Сколько времени занимает строительство дома?',
+    answer: 'Время строительства зависит от сложности проекта и составляет от 8 до 20 дней. Каркасные дома строятся быстрее всего - за 8-12 дней, брусовые - за 12-15 дней, модульные - за 15-20 дней.',
+    category: 'сроки',
+    isPopular: true
+  },
+  {
+    id: 'faq-2',
+    question: 'Какие материалы используются в строительстве?',
+    answer: 'Мы используем только сертифицированные материалы: качественную древесину, утеплители, кровельные материалы от проверенных поставщиков. Все материалы имеют соответствующие сертификаты качества.',
+    category: 'материалы'
+  },
+  {
+    id: 'faq-3',
+    question: 'Предоставляете ли вы гарантию на построенные дома?',
+    answer: 'Да, мы предоставляем полную гарантию 5 лет на все работы и материалы. Гарантия покрывает конструкцию, отделку и все инженерные системы.',
+    category: 'гарантия',
+    isPopular: true
+  },
+  {
+    id: 'faq-4',
+    question: 'Можно ли изменить проект под свои потребности?',
+    answer: 'Конечно! Мы предлагаем как готовые типовые проекты, так и индивидуальное проектирование. Наши архитекторы помогут адаптировать любой проект под ваши требования.',
+    category: 'проектирование'
+  },
+  {
+    id: 'faq-5',
+    question: 'Входит ли в стоимость фундамент?',
+    answer: 'Фундамент входит в базовую стоимость только для некоторых проектов. В большинстве случаев фундамент рассчитывается отдельно в зависимости от типа грунта и выбранного типа фундамента.',
+    category: 'оплата'
+  },
+  {
+    id: 'faq-6',
+    question: 'Как происходит оплата за работу?',
+    answer: 'Оплата происходит поэтапно: 30% при подписании договора, 40% при начале строительства, 30% при сдаче объекта. Возможны индивидуальные условия оплаты.',
+    category: 'оплата',
+    isPopular: true
+  },
+  {
+    id: 'faq-7',
+    question: 'Нужно ли получать разрешения на строительство?',
+    answer: 'Для дачных домов площадью до 100 м² разрешение на строительство не требуется. Мы поможем оформить все необходимые документы для регистрации дома.',
+    category: 'документы'
+  },
+  {
+    id: 'faq-8',
+    question: 'Можно ли строить зимой?',
+    answer: 'Да, каркасные дома можно строить круглый год. Современные технологии позволяют вести строительные работы при температуре до -15°C без потери качества.',
+    category: 'сроки'
+  },
+  {
+    id: 'faq-9',
+    question: 'Предоставляете ли вы услуги по подключению коммуникаций?',
+    answer: 'Да, мы оказываем полный спектр услуг по подключению электричества, водоснабжения, канализации и отопления. Все работы выполняются квалифицированными специалистами.',
+    category: 'сервис'
+  },
+  {
+    id: 'faq-10',
+    question: 'Что делать, если возникли проблемы после сдачи дома?',
+    answer: 'Наша служба поддержки работает 24/7. При возникновении любых проблем мы оперативно их решаем в рамках гарантийных обязательств. Звоните нам в любое время!',
+    category: 'сервис',
+    isPopular: true
+  }
+]
+
+const categories = [
+  { id: 'all', name: 'Все вопросы' },
+  { id: 'сроки', name: 'Сроки' },
+  { id: 'материалы', name: 'Материалы' },
+  { id: 'гарантия', name: 'Гарантия' },
+  { id: 'оплата', name: 'Оплата' },
+  { id: 'проектирование', name: 'Проектирование' },
+  { id: 'документы', name: 'Документы' },
+  { id: 'сервис', name: 'Сервис' }
+]
+
+export default function FAQ() {
+  const [isVisible, setIsVisible] = useState(false)
+  const [activeCategory, setActiveCategory] = useState('all')
+  const [openItems, setOpenItems] = useState<string[]>([])
+  const [items, setItems] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchFAQ = async () => {
+      try {
+        const res = await fetch('/api/faq')
+        if (res.ok) {
+          const data = await res.json()
+          setItems(data)
+        }
+      } catch (error) {
+        console.error('Error loading FAQ:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchFAQ()
+  }, [])
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true)
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    const element = document.getElementById('faq')
+    if (element) {
+      observer.observe(element)
+    }
+
+    return () => observer.disconnect()
+  }, [])
+
+  const filteredItems = activeCategory === 'all' 
+    ? items 
+    : items.filter((item: any) => item.category === activeCategory || !item.category)
+
+  const toggleItem = (itemId: string) => {
+    setOpenItems(prev => 
+      prev.includes(itemId) 
+        ? prev.filter(id => id !== itemId)
+        : [...prev, itemId]
+    )
+  }
+
+  return (
+    <section id="faq" className="py-20 bg-gray-50">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Заголовок */}
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            Часто задаваемые вопросы
+          </h2>
+          <p className="text-xl text-gray-600">
+            Ответы на самые популярные вопросы о строительстве домов
+          </p>
+        </div>
+
+        {/* Фильтры по категориям */}
+        <div className={`mb-12 transition-all duration-500 ${
+          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}>
+          <div className="flex flex-wrap justify-center gap-2">
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                onClick={() => setActiveCategory(category.id)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${
+                  activeCategory === category.id
+                    ? 'bg-[#5D4E37] text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                {category.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* FAQ список */}
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5D4E37] mx-auto"></div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {filteredItems.map((item: any, index: number) => (
+            <div
+              key={item.id}
+              className={`bg-white rounded-xl shadow-lg transition-all duration-500 ${
+                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+              style={{ transitionDelay: `${index * 50}ms` }}
+            >
+              <button
+                onClick={() => toggleItem(item.id)}
+                className="w-full p-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors duration-200"
+              >
+                <div className="flex items-center space-x-3">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {item.question}
+                  </h3>
+                  {item.isPopular && (
+                    <span className="px-2 py-1 bg-[#E8DCC6] text-[#6D5D4A] text-xs font-medium rounded-full">
+                      Популярный
+                    </span>
+                  )}
+                </div>
+                <svg
+                  className={`w-5 h-5 text-gray-500 transition-transform duration-200 ${
+                    openItems.includes(item.id) ? 'rotate-180' : ''
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              
+              <div className={`overflow-hidden transition-all duration-300 ${
+                openItems.includes(item.id) ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+              }`}>
+                <div className="px-6 pb-6">
+                  <div className="border-t pt-4">
+                    <p className="text-gray-700 leading-relaxed">
+                      {item.answer}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+          </div>
+        )}
+
+        {/* CTA */}
+        <div className="text-center mt-12">
+          <p className="text-gray-600 mb-6">
+            Не нашли ответ на свой вопрос?
+          </p>
+          <a
+            href="#contacts"
+            className="inline-flex items-center px-6 py-3 bg-[#5D4E37] hover:bg-[#6D5D4A] text-white font-semibold rounded-lg transition-colors duration-200"
+          >
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            Задать вопрос
+          </a>
+        </div>
+      </div>
+    </section>
+  )
+}
