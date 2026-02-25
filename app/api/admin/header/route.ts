@@ -37,7 +37,7 @@ export async function GET() {
       if (!latestConfig) {
         latestConfig = await tx.headerConfig.create({
           data: {
-            logoText: 'АкваГазТех',
+            logoText: 'Печнойпроект',
             logoImage: null,
             showLogoText: true
           }
@@ -85,7 +85,7 @@ export async function POST(req: Request) {
 
     // Используем ?? вместо || чтобы не заменять пустую строку на дефолт
     const configData = {
-      logoText: logoText ?? 'АкваГазТех',
+      logoText: logoText ?? 'Печнойпроект',
       logoImage: logoImage || null,
       showLogoText
     }

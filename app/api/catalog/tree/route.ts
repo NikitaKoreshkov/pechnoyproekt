@@ -24,7 +24,14 @@ export async function GET() {
         }
       }
     })
-    return NextResponse.json(sections, {
+    const deduped = sections.map((s) => ({
+      ...s,
+      subsections: (s.subsections || []).filter(
+        (sub: { slug: string; title: string }, i: number, arr: { slug: string; title: string }[]) =>
+          arr.findIndex((x) => x.slug === sub.slug || x.title === sub.title) === i
+      )
+    }))
+    return NextResponse.json(deduped, {
       headers: { 'Cache-Control': 'no-store, max-age=0' }
     })
   } catch (error) {

@@ -20,18 +20,18 @@ export async function POST(request: Request) {
       prisma.calculatorConfig.findFirst(),
       prisma.footerConfig.findFirst()
     ])
-    const companyName = footerConfig?.companyName || 'АкваГазТех'
+    const companyName = footerConfig?.companyName || 'Печнойпроект'
     const houseTypesFromDb = cfg?.houseTypes as any[] || [
-      { id: 'steel', name: 'Стальные трубы', basePrice: 250 },
-      { id: 'plastic', name: 'Пластиковые трубы (ПВХ)', basePrice: 150 },
-      { id: 'metalplastic', name: 'Металлопластиковые трубы', basePrice: 200 }
+      { id: 'basic', name: 'Базовый вариант', basePrice: 250 },
+      { id: 'standard', name: 'Стандарт', basePrice: 150 },
+      { id: 'premium', name: 'Премиум', basePrice: 200 }
     ]
     
     const finishingOptionsFromDb = cfg?.finishingOptions as any[] || [
-      { name: 'Без обработки', multiplier: 0 },
-      { name: 'Оцинковка', multiplier: 0.15 },
-      { name: 'Покраска', multiplier: 0.1 },
-      { name: 'Теплоизоляция', multiplier: 0.25 }
+      { name: 'Без дополнений', multiplier: 0 },
+      { name: 'Опция 1', multiplier: 0.15 },
+      { name: 'Опция 2', multiplier: 0.1 },
+      { name: 'Опция 3', multiplier: 0.25 }
     ]
     
     const houseTypeData = houseTypesFromDb.find(ht => ht.name === houseType) || houseTypesFromDb[0]
@@ -269,7 +269,7 @@ export async function POST(request: Request) {
   <div class="footer">
     <div>© ${new Date().getFullYear()} ${companyName}. Все права защищены.</div>
     <div>Телефон: +7 (931) 302-30-08 | Email: agtspb@inbox.ru</div>
-    <div>188680, РОССИЯ, ЛЕНИНГРАДСКАЯ ОБЛ, ВСЕВОЛОЖСКИЙ Р-Н, Г КОЛТУШИ, УЛ МИРА, Д 9, КВ 222</div>
+    <div>Санкт-Петербург</div>
     <div>ИНН: 4706094590, КПП: 470601001, ОГРН: 1254700021575</div>
     <div>Расчетный счет: 40702810710002035521 в АО «ТБанк», БИК: 044525974</div>
   </div>

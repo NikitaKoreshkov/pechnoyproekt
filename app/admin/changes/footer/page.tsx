@@ -13,7 +13,11 @@ export default function FooterEditorPage() {
   const [whatsappUrl, setWhatsappUrl] = useState('')
   const [whatsappText, setWhatsappText] = useState('')
   const [phone, setPhone] = useState('')
+  const [phone2, setPhone2] = useState('')
   const [email, setEmail] = useState('')
+  const [youtubeUrl, setYoutubeUrl] = useState('')
+  const [telegramUrl, setTelegramUrl] = useState('')
+  const [vkUrl, setVkUrl] = useState('')
   const [addressLine1, setAddressLine1] = useState('')
   const [addressLine2, setAddressLine2] = useState('')
   const [addressLine3, setAddressLine3] = useState('')
@@ -44,7 +48,11 @@ export default function FooterEditorPage() {
         setWhatsappUrl(data.whatsappUrl || '')
         setWhatsappText(data.whatsappText || '')
         setPhone(data.phone || '')
+        setPhone2(data.phone2 || '')
         setEmail(data.email || '')
+        setYoutubeUrl(data.youtubeUrl || '')
+        setTelegramUrl(data.telegramUrl || '')
+        setVkUrl(data.vkUrl || '')
         setAddressLine1(data.addressLine1 || '')
         setAddressLine2(data.addressLine2 || '')
         setAddressLine3(data.addressLine3 || '')
@@ -86,7 +94,11 @@ export default function FooterEditorPage() {
         whatsappUrl,
         whatsappText,
         phone,
+        phone2,
         email,
+        youtubeUrl,
+        telegramUrl,
+        vkUrl,
         addressLine1,
         addressLine2,
         addressLine3,
@@ -122,7 +134,11 @@ export default function FooterEditorPage() {
         setWhatsappUrl(data.whatsappUrl || '')
         setWhatsappText(data.whatsappText || '')
         setPhone(data.phone || '')
+        setPhone2(data.phone2 || '')
         setEmail(data.email || '')
+        setYoutubeUrl(data.youtubeUrl || '')
+        setTelegramUrl(data.telegramUrl || '')
+        setVkUrl(data.vkUrl || '')
         setAddressLine1(data.addressLine1 || '')
         setAddressLine2(data.addressLine2 || '')
         setAddressLine3(data.addressLine3 || '')
@@ -213,6 +229,18 @@ export default function FooterEditorPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
+                Телефон 2
+              </label>
+              <input
+                type="text"
+                value={phone2}
+                onChange={(e) => setPhone2(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5D4E37]"
+                placeholder="+7 (982) 709-32-57"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Email
               </label>
               <input
@@ -261,6 +289,25 @@ export default function FooterEditorPage() {
                 onChange={(e) => setAddressLine3(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5D4E37]"
               />
+            </div>
+          </div>
+        </div>
+
+        {/* Соцсети */}
+        <div className="bg-white rounded-xl p-6 border border-gray-200">
+          <h2 className="text-xl font-semibold mb-4">Соцсети</h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">YouTube</label>
+              <input type="url" value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5D4E37]" placeholder="https://youtube.com/..." />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Telegram</label>
+              <input type="url" value={telegramUrl} onChange={(e) => setTelegramUrl(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5D4E37]" placeholder="https://t.me/..." />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">VK</label>
+              <input type="url" value={vkUrl} onChange={(e) => setVkUrl(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5D4E37]" placeholder="https://vk.com/..." />
             </div>
           </div>
         </div>

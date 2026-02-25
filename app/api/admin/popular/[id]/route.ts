@@ -148,6 +148,9 @@ export async function PATCH(
     if (typeof body.subsubsectionId !== 'undefined') {
       updateData.subsubsectionId = body.subsubsectionId && String(body.subsubsectionId).trim() ? body.subsubsectionId : null
     }
+    if (body.hasOwnProperty('projectSlug')) {
+      updateData.projectSlug = body.projectSlug && String(body.projectSlug).trim() ? body.projectSlug : null
+    }
 
     console.log('[ADMIN POPULAR PATCH] Update data keys:', Object.keys(updateData))
     console.log('[ADMIN POPULAR PATCH] Update data (stringified):', JSON.stringify(updateData, null, 2))

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 
 export default function CatalogSeoText() {
-  const [title, setTitle] = useState('Трубы ПНД и комплектующие для инженерных систем')
+  const [title, setTitle] = useState('Каталог продукции')
   const [content, setContent] = useState('')
   const [loading, setLoading] = useState(true)
 
@@ -24,7 +24,7 @@ export default function CatalogSeoText() {
 
         if (res.ok) {
           const data = await res.json()
-          setTitle(data.title || 'Трубы ПНД и комплектующие для инженерных систем')
+          setTitle(data.title || 'Каталог продукции')
           setContent(data.content || '')
           if (force) {
             console.log('[Catalog SEO Text] Data updated after broadcast event')

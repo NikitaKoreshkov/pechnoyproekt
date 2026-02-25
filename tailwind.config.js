@@ -11,10 +11,22 @@ module.exports = {
         bp: '920px',
       },
       colors: {
-        // Natural wood colors
+        // Premium warm palette — мангалы, камины, Old Money
+        premium: {
+          espresso: '#1A0F0A',
+          walnut: '#2C1810',
+          mahogany: '#3D2314',
+          cognac: '#5C3825',
+          caramel: '#8B5A2B',
+          gold: '#ffffff',
+          brass: '#B8860B',
+          cream: '#F5F0E8',
+          ivory: '#EDE8E0',
+          charcoal: '#1A1210',
+        },
         wood: {
-          dark: '#5D4E37',
-          medium: '#8B6F47',
+          dark: '#4A2C1A',
+          medium: '#8B5A2B',
           light: '#A67C52',
         },
         forest: {
@@ -22,8 +34,8 @@ module.exports = {
           sage: '#6B8E6B',
         },
         natural: {
-          cream: '#F5F1E8',
-          beige: '#E8DCC6',
+          cream: '#F5F0E6',
+          beige: '#EDE6D9',
           brown: '#6D5D4A',
         },
       },

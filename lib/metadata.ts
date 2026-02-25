@@ -14,7 +14,7 @@ export async function getSiteMetadata(): Promise<{
       prisma.footerConfig.findFirst()
     ])
 
-    const companyName = footerConfig?.companyName || 'АкваГазТех'
+    const companyName = footerConfig?.companyName || 'Печнойпроект'
     
     return {
       siteTitle: metadataConfig?.siteTitle || `Трубы ПНД и комплектующие | ${companyName} - Качественные материалы для инженерных систем`,
@@ -26,18 +26,18 @@ export async function getSiteMetadata(): Promise<{
   } catch (error) {
     console.error('[METADATA] Error loading metadata:', error)
     return {
-      siteTitle: 'Трубы ПНД и комплектующие | АкваГазТех',
+      siteTitle: 'Печные комплексы и мангалы | Печнойпроект',
       siteDescription: 'Поставка качественных труб ПНД (ПЭ) и комплектующих для водопровода, канализации и газопровода.',
       siteKeywords: 'трубы ПНД, трубы ПЭ, комплектующие для труб, водопровод, канализация, газопровод, фитинги, Москва, Россия',
       ogImage: '/images/1.png',
-      companyName: 'АкваГазТех'
+      companyName: 'Печнойпроект'
     }
   }
 }
 
 export async function generateSiteMetadata(): Promise<Metadata> {
   const metadata = await getSiteMetadata()
-  const baseUrl = 'https://aquagazteh.ru'
+  const baseUrl = 'https://xn--e1aalfmgbdekz5c.xn--p1ai'
 
   return {
     title: metadata.siteTitle,

@@ -270,7 +270,8 @@ export async function GET(
         description: popularItem.description || `Популярный проект: ${popularItem.title}`,
         advantages: popularItem.advantages || [],
         technicalSpecs: popularItem.technicalSpecs || null,
-        specs
+        specs,
+        videoUrl: popularItem.videoUrl || null
       }, {
         headers: {
           'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
@@ -329,7 +330,8 @@ export async function GET(
       advantages: popularItem?.advantages || project.advantages,
       technicalSpecs: popularItem?.technicalSpecs || project.technicalSpecs || null,
       specs,
-      variationGroupId: project.variationGroupId || null
+      variationGroupId: project.variationGroupId || null,
+      videoUrl: popularItem?.videoUrl ?? project.videoUrl ?? null
     }
 
     console.log('[PROJECT API GET] Returning project data:', {

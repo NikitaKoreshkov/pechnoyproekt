@@ -145,7 +145,7 @@ export default function CatalogGrid({
             <div className="text-center mt-12">
               <button
                 onClick={onLoadMore}
-                className="px-8 py-3 bg-white border-2 border-[#1E3A5F] text-[#1E3A5F] hover:bg-[#1E3A5F] hover:text-white font-semibold rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
+                className="px-8 py-3 bg-white border-2 border-[#1A0F0A] text-[#1A0F0A] hover:bg-[#1A0F0A] hover:text-white font-semibold rounded-xl transition-all duration-200 shadow-[0_4px_20px_-4px_rgba(26,15,10,0.08)] hover:shadow-[0_8px_30px_-4px_rgba(26,15,10,0.15)]"
               >
                 Загрузить ещё товары
               </button>
@@ -156,7 +156,7 @@ export default function CatalogGrid({
           {isLoading && houses.length > 0 && (
             <div className="text-center mt-8">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg shadow-sm">
-                <div className="animate-spin w-4 h-4 border-2 border-[#1E3A5F] border-t-transparent rounded-full"></div>
+                <div className="animate-spin w-4 h-4 border-2 border-[#1A0F0A] border-t-transparent rounded-full"></div>
                 <span className="text-gray-600">Загружаем товары...</span>
               </div>
             </div>

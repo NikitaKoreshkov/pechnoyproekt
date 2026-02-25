@@ -17,6 +17,8 @@ interface MobileFiltersProps {
   onResetFilters: () => void
   isOpen: boolean
   onClose: () => void
+  subsectionId?: string | null
+  sectionId?: string | null
 }
 
 function RangeSlider({ 
@@ -69,7 +71,9 @@ export default function MobileFilters({
   onFiltersChange,
   onResetFilters,
   isOpen,
-  onClose
+  onClose,
+  subsectionId,
+  sectionId
 }: MobileFiltersProps) {
   const [config, setConfig] = useState<any>(null)
   
@@ -78,7 +82,10 @@ export default function MobileFilters({
   
   const loadConfig = async () => {
     try {
-      const res = await fetch(`/api/catalog/filters?t=${Date.now()}`, { 
+      const params = new URLSearchParams({ t: String(Date.now()) })
+      if (subsectionId) params.set('subsectionId', subsectionId)
+      else if (sectionId) params.set('sectionId', sectionId)
+      const res = await fetch(`/api/catalog/filters?${params.toString()}`, { 
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache',
@@ -88,6 +95,14 @@ export default function MobileFilters({
       const data = await res.json()
       const { blocks, layout, ...clean } = data || {}
       setConfig(clean)
+      // Для подразделов с ограничением цены (ОВП до 20к и др.): подгоняем priceRange под конфиг
+      const priceCfg = clean?.price
+      if (priceCfg?.max != null && priceCfg.max < 50000000 && filters.priceRange[1] > priceCfg.max) {
+        onFiltersChange({
+          ...filters,
+          priceRange: [Math.min(filters.priceRange[0], priceCfg.max), priceCfg.max]
+        })
+      }
     } catch {
       setConfig(null)
     }
@@ -115,7 +130,7 @@ export default function MobileFilters({
         document.removeEventListener('visibilitychange', handleVisibilityChange)
       }
     }
-  }, [isOpen])
+  }, [isOpen, subsectionId, sectionId])
   const formatPrice = (price: number) => {
     if (price >= 1000000) {
       return (price / 1000000).toFixed(1) + ' млн ₽'

@@ -250,7 +250,7 @@ export default function CatalogStructurePage() {
           <div className="flex gap-3">
             <input
               type="text"
-              placeholder="Название раздела (напр. Полиэтиленовые трубы)"
+              placeholder="Название раздела"
               value={newSectionTitle}
               onChange={(e) => setNewSectionTitle(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && createSection()}

@@ -22,8 +22,8 @@ const FAQ = dynamic(() => import('@/components/FAQ'), {
 })
 
 const defaultHeroConfig = {
-  heroImage: '/images/1.png',
-  title: 'Трубы ПНД и комплектующие для инженерных систем',
+  heroImage: '/images/main.png',
+  title: 'Каталог продукции и услуг',
   subtitle: 'Надёжно. Выгодно. С гарантией качества.'
 }
 
@@ -34,7 +34,7 @@ export default async function Home() {
     : defaultHeroConfig
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen bg-gradient-to-b from-[#FAF7F2] via-[#F5F0E8] to-[#EDE8E0]">
       <Header />
       <Hero initialConfig={initialHero} />
       <ProjectsCatalog />

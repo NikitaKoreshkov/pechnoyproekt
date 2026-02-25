@@ -17,19 +17,15 @@ export default function ChangesPage() {
       </Link>
       <Link href="/admin/changes/process-steps" className="block p-6 rounded-xl border border-gray-200 bg-white hover:shadow-lg transition">
         <h2 className="text-xl font-semibold mb-2">О компании</h2>
-        <p className="text-gray-600">Редактирование информации о компании и преимуществ труб ПНД.</p>
+        <p className="text-gray-600">Редактирование информации о компании и преимуществ.</p>
       </Link>
       <Link href="/admin/changes/advantages" className="block p-6 rounded-xl border border-gray-200 bg-white hover:shadow-lg transition">
         <h2 className="text-xl font-semibold mb-2">Наши преимущества</h2>
         <p className="text-gray-600">Редактирование карточек преимуществ (6 карточек).</p>
       </Link>
-      <Link href="/admin/changes/popular" className="block p-6 rounded-xl border border-gray-200 bg-white hover:shadow-lg transition">
-        <h2 className="text-xl font-semibold mb-2">Популярные товары</h2>
-        <p className="text-gray-600">Управляйте двумя панелями и до 6 карточек в каждой.</p>
-      </Link>
       <Link href="/admin/changes/calculator" className="block p-6 rounded-xl border border-gray-200 bg-white hover:shadow-lg transition">
-        <h2 className="text-xl font-semibold mb-2">Калькулятор</h2>
-        <p className="text-gray-600">Типы труб, обработка, доп. опции и формула.</p>
+        <h2 className="text-xl font-semibold mb-2">Калькулятор барбекю</h2>
+        <p className="text-gray-600">Мангалы и секции (Стандарт и ВИП) для калькулятора на главной.</p>
       </Link>
       <Link href="/admin/changes/reviews" className="block p-6 rounded-xl border border-gray-200 bg-white hover:shadow-lg transition">
         <h2 className="text-xl font-semibold mb-2">Отзывы</h2>
@@ -40,10 +36,6 @@ export default function ChangesPage() {
         <p className="text-gray-600">Вопросы и ответы, управление порядком.</p>
       </Link>
 
-      <Link href="/admin/changes/catalog-structure" className="block p-6 rounded-xl border border-gray-200 bg-white hover:shadow-lg transition">
-        <h2 className="text-xl font-semibold mb-2">Настройка каталога</h2>
-        <p className="text-gray-600">Разделы и подразделы каталога: создание, редактирование, удаление.</p>
-      </Link>
       <Link href="/admin/changes/catalog-seo-text" className="block p-6 rounded-xl border border-gray-200 bg-white hover:shadow-lg transition">
         <h2 className="text-xl font-semibold mb-2">SEO-текст каталога</h2>
         <p className="text-gray-600">Редактирование описательного текста на странице каталога</p>

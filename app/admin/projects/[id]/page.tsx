@@ -231,33 +231,6 @@ export default function ProjectEditPage({ params }: { params: { id: string } }) 
           </div>
         </div>
 
-        {/* Материал */}
-        <div className="flex items-start gap-3">
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Материал</label>
-            <input 
-              className="w-full border rounded px-3 py-2" 
-              type="text"
-              placeholder="Введите материал" 
-              value={data.material || ''} 
-              onChange={e => updateFieldAndSync('material', e.target.value)}
-            />
-          </div>
-          <div className="w-52 pt-6">
-            <label className="block text-xs text-gray-500 mb-1">Брать из панели</label>
-            <select
-              className="w-full border rounded px-3 py-2 text-sm"
-              value={data.specs?.fieldPanelMap?.material ?? ''}
-              onChange={e => setFieldPanel('material', e.target.value === '' ? null : Number(e.target.value))}
-            >
-              <option value="">— Не выбрано —</option>
-              {(data.specs?.pricePanels || []).map((p: any, i: number) => (
-                <option key={i} value={i}>{p.title || `Панель ${i + 1}`}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
         {/* Длина */}
         <div className="flex items-start gap-3">
           <div className="flex-1">

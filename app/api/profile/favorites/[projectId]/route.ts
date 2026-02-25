@@ -113,7 +113,7 @@ export async function POST(req, { params }: { params: Promise<{ projectId: strin
                 priceFrom: popularItem.priceFrom,
                 priceTo: popularItem.priceTo,
                 floors: popularItem.floors ?? 1,
-                material: popularItem.material || 'ПНД',
+                material: popularItem.material || 'стандарт',
                 buildTime: popularItem.buildTime ?? 100,
                 completion: popularItem.completion || 'под ключ',
                 region: popularItem.region || 'Москва',

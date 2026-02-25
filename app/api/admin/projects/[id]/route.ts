@@ -199,19 +199,33 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
     
     console.log('[ADMIN DELETE] Found project:', project.id, project.title)
   
-  // Также удаляем связь из популярных проектов, если есть
+  // Убираем связь из популярных проектов
     try {
-  await prisma.popularItem.updateMany({
-    where: { projectSlug: project.slug },
-    data: { projectSlug: null }
-  })
+      await prisma.popularItem.updateMany({
+        where: { projectSlug: project.slug },
+        data: { projectSlug: null }
+      })
       console.log('[ADMIN DELETE] Updated popular items')
     } catch (popularError: any) {
       console.error('[ADMIN DELETE] Error updating popular items:', popularError)
-      // Не останавливаем удаление, если не удалось обновить популярные
     }
-  
-  await prisma.project.delete({ where: { id: project.id } })
+
+    // Отключаем проект от избранного и сравнения (FK constraint)
+    try {
+      await prisma.project.update({
+        where: { id: project.id },
+        data: {
+          favoritedBy: { set: [] },
+          comparedBy: { set: [] }
+        }
+      })
+      console.log('[ADMIN DELETE] Disconnected from favorites/compare')
+    } catch (relError: any) {
+      console.error('[ADMIN DELETE] Error disconnecting relations:', relError)
+      // Продолжаем удаление
+    }
+
+    await prisma.project.delete({ where: { id: project.id } })
     console.log('[ADMIN DELETE] Project deleted successfully:', project.id)
   
     return NextResponse.json({ ok: true, deletedId: project.id }, {

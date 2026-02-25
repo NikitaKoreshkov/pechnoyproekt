@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sticky Test</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, sans-serif; }
+    
+    .header { 
+      height: 64px; 
+      background: #1A0F0A; 
+      color: white; 
+      display: flex; 
+      align-items: center; 
+      padding: 0 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .page { 
+      display: flex; 
+      min-height: 200vh; /* Длинная страница для скролла */
+      padding: 1rem 0;
+    }
+    
+    /* Родитель фильтров - должен быть виден и достаточно высоким */
+    .filters-parent {
+      width: 320px;
+      flex-shrink: 0;
+      background: #f0f0f0;
+      border: 3px solid blue; /* Родитель - синяя обводка */
+    }
+    
+    /* Sticky контейнер */
+    .filters-sticky {
+      position: sticky;
+      top: 80px; /* Ниже хедера */
+      padding: 1rem;
+      background: white;
+      border: 3px solid red; /* Сам sticky - красная обводка */
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .content {
+      flex: 1;
+      padding: 1rem 2rem;
+      background: #fafafa;
+    }
+    
+    .card {
+      background: white;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <header class="header">Header (sticky)</header>
+  
+  <div class="page">
+    <aside class="filters-parent">
+      <div class="filters-sticky">
+        <h3>Фильтры (sticky)</h3>
+        <p>При скролле вниз эта панель должна оставаться видимой.</p>
+        <p>Синяя рамка = родитель. Красная = sticky-элемент.</p>
+      </div>
+    </aside>
+    
+    <main class="content">
+      <h1>Контент</h1>
+      <p>Скролльте вниз — панель фильтров слева должна «прилипнуть».</p>
+      <div class="card">Карточка 1</div>
+      <div class="card">Карточка 2</div>
+      <div class="card">Карточка 3</div>
+      <div class="card">Карточка 4</div>
+      <div class="card">Карточка 5</div>
+      <div class="card">Карточка 6</div>
+      <div class="card">Карточка 7</div>
+      <div class="card">Карточка 8</div>
+      <div class="card">Карточка 9</div>
+      <div class="card">Карточка 10</div>
+    </main>
+  </div>
+</body>
+</html>

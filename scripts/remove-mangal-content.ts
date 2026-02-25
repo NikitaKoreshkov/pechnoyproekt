@@ -114,7 +114,7 @@ async function main() {
       data: {
         title: 'Трубы ПНД и комплектующие',
         subtitle: 'Качественно. Быстро. Надёжно. С гарантией.',
-        heroImage: hero.heroImage?.includes('mangal') ? '/images/1.png' : hero.heroImage,
+        heroImage: hero.heroImage?.includes('mangal') ? '/images/main.png' : hero.heroImage,
       },
     })
     updatedConfigs++

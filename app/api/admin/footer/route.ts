@@ -14,23 +14,23 @@ export async function GET() {
     if (!config) {
       config = await prisma.footerConfig.create({
         data: {
-          companyName: 'АкваГазТех',
-          companyDescription: 'Поставка качественных труб ПНД и комплектующих для инженерных систем. Надежно, выгодно, с гарантией качества.',
-          whatsappUrl: 'https://wa.me/79313023008',
-          whatsappText: '🔧 АкваГазТех\n\nЗдравствуйте! Хочу узнать больше о трубах ПНД и материалах.\n\nГотов(а) ответить на ваши вопросы!',
-          phone: '+7 (931) 302-30-08',
+          companyName: 'Печнойпроект',
+          companyDescription: 'Качественные услуги и продукция. Надёжно, выгодно, с гарантией качества.',
+          whatsappUrl: 'https://max.ru/u/f9LHodD0cOIpDPuCcMZgHcMs8Q34keKCS0fVwDTH9yLudQ6BH_47EGRwPTE',
+          whatsappText: 'Печнойпроект\n\nЗдравствуйте! Хочу узнать больше о печных комплексах и мангалах.\n\nГотов(а) ответить на ваши вопросы!',
+          phone: '+7 (952) 131-52-82',
           email: 'agtspb@inbox.ru',
-          addressLine1: '188680, Ленинградская обл.,',
-          addressLine2: 'Всеволожский р-н, г. Колтуши,',
-          addressLine3: 'ул. Мира, д. 9, кв. 222',
+          addressLine1: 'Санкт-Петербург',
+          addressLine2: '',
+          addressLine3: '',
           workingHoursLine1: 'Пн-Пт: 9:00 - 18:00',
           workingHoursLine2: 'Сб-Вс: выходные',
           newsletterTitle: 'Новости и акции',
           newsletterDescription: 'Подпишитесь на рассылку и получайте информацию о новых поступлениях и специальных предложениях',
-          copyright: '© 2025 АкваГазТех. Все права защищены.',
+          copyright: '© 2025. Все права защищены.',
           ip: 'ООО "АКВАГАЗТЕХ"',
           inn: 'ИНН: 4706094590, КПП: 470601001, ОГРН: 1254700021575',
-          legalAddress: 'Юридический адрес: 188680, РОССИЯ, ЛЕНИНГРАДСКАЯ ОБЛ, ВСЕВОЛОЖСКИЙ Р-Н, Г КОЛТУШИ, УЛ МИРА, Д 9, КВ 222'
+          legalAddress: 'Санкт-Петербург'
         }
       })
     }
@@ -71,6 +71,7 @@ export async function POST(req: Request) {
       whatsappUrl,
       whatsappText,
       phone,
+      phone2,
       email,
       addressLine1,
       addressLine2,
@@ -82,7 +83,10 @@ export async function POST(req: Request) {
       copyright,
       ip,
       inn,
-      legalAddress
+      legalAddress,
+      youtubeUrl,
+      telegramUrl,
+      vkUrl,
     } = body
 
     const existingConfig = await prisma.footerConfig.findFirst()
@@ -97,6 +101,7 @@ export async function POST(req: Request) {
             whatsappUrl,
             whatsappText,
             phone,
+            phone2: phone2 ?? undefined,
             email,
             addressLine1,
             addressLine2,
@@ -108,7 +113,10 @@ export async function POST(req: Request) {
             copyright,
             ip,
             inn,
-            legalAddress
+            legalAddress,
+            youtubeUrl: youtubeUrl ?? undefined,
+            telegramUrl: telegramUrl ?? undefined,
+            vkUrl: vkUrl ?? undefined,
           }
         })
       : await prisma.footerConfig.create({
@@ -118,6 +126,7 @@ export async function POST(req: Request) {
             whatsappUrl,
             whatsappText,
             phone,
+            phone2: phone2 ?? undefined,
             email,
             addressLine1,
             addressLine2,
@@ -129,7 +138,10 @@ export async function POST(req: Request) {
             copyright,
             ip,
             inn,
-            legalAddress
+            legalAddress,
+            youtubeUrl: youtubeUrl ?? undefined,
+            telegramUrl: telegramUrl ?? undefined,
+            vkUrl: vkUrl ?? undefined,
           }
         })
 

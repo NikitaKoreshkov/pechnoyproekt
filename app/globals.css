@@ -36,7 +36,7 @@
     height: 20px;
     width: 20px;
     border-radius: 50%;
-    background: #1E3A5F;
+    background: #1A0F0A;
     cursor: pointer;
     border: 2px solid white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -48,7 +48,7 @@
     height: 20px;
     width: 20px;
     border-radius: 50%;
-    background: #1E3A5F;
+    background: #1A0F0A;
     cursor: pointer;
     border: 2px solid white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -56,13 +56,13 @@
 
   input[type="range"]::-webkit-slider-track {
     height: 6px;
-    background: linear-gradient(to right, #1E3A5F 0%, #1E3A5F 100%);
+    background: linear-gradient(to right, #1A0F0A 0%, #ffffff 100%);
     border-radius: 3px;
   }
 
   input[type="range"]::-moz-range-track {
     height: 6px;
-    background: #1E3A5F;
+    background: #1A0F0A;
     border-radius: 3px;
     border: none;
   }
@@ -126,13 +126,13 @@
     -webkit-backdrop-filter: blur(4px);
   }
 
-  /* Стили для кнопок */
+  /* Стили для кнопок — премиальная палитра */
   .btn-primary {
-    @apply px-6 py-3 bg-[#1E3A5F] hover:bg-[#2C5282] text-white font-semibold rounded-lg transition-all duration-200 shadow-sm hover:shadow-md;
+    @apply px-6 py-3 bg-[#2C1810] hover:bg-[#4A2C1A] text-white font-semibold rounded-lg transition-all duration-200 shadow-sm hover:shadow-md;
   }
 
   .btn-secondary {
-    @apply px-6 py-3 border-2 border-[#1E3A5F] text-[#1E3A5F] hover:bg-[#1E3A5F] hover:text-white font-semibold rounded-lg transition-all duration-200;
+    @apply px-6 py-3 border-2 border-[#4A2C1A] text-[#4A2C1A] hover:bg-[#4A2C1A] hover:text-white font-semibold rounded-lg transition-all duration-200;
   }
 
   .btn-ghost {
@@ -178,20 +178,26 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    /* Глобально без смещения; точную настройку делаем локально у секций */
     scroll-padding-top: 0px;
+    overflow-x: clip; /* clip вместо hidden — не ломает position: sticky */
+  }
+  body {
+    overflow-x: clip;
   }
   
   :root {
-    /* Natural wood palette */
-    --wood-dark: #1E3A5F; /* темный орех */
-    --wood-medium: #8B6F47; /* средний орех */
-    --wood-light: #A67C52; /* светло-ореховый */
-    --forest-green: #4A6B57; /* лесной зеленый */
-    --sage-green: #6B8E6B; /* зеленый шалфей */
-    --cream: #F5F1E8; /* кремовый */
-    --beige: #E8DCC6; /* бежевый */
-    --earthy-brown: #2C5282; /* земельный коричневый */
+    /* Premium warm palette — мангалы, камины, Old Money */
+    --espresso: #1A0F0A;       /* глубокий эспрессо */
+    --walnut: #2C1810;         /* орех */
+    --mahogany: #3D2314;       /* махагон тёмный */
+    --cognac: #5C3825;         /* коньяк */
+    --caramel: #8B5A2B;        /* карамель */
+    --gold: #ffffff;           /* белый акцент */
+    --brass: #B8860B;          /* латунь */
+    --champagne: #F8F4EE;      /* шампань */
+    --cream: #F5F0E8;          /* крем премиум */
+    --ivory: #EDE8E0;          /* слоновая кость */
+    --warm-charcoal: #1A1210;  /* тёплый charcoal */
   }
   
   .font-inter {
@@ -237,4 +243,45 @@
 
 .animate-catalog-content {
   animation: catalogContentFade 0.25s ease-out forwards;
+}
+
+/* AI Assistant pulse */
+@keyframes assistantPulse {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 0.05; transform: scale(1.15); }
+}
+
+.assistant-pulse {
+  animation: assistantPulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes assistantPanelIn {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.assistant-panel-in {
+  animation: assistantPanelIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Искры снизу вверх — для тёмных блоков (мангалы, огонь) */
+@keyframes sparkRise {
+  0% {
+    transform: translateY(0) scale(0.8);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.9;
+  }
+  85% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-100vh) scale(0.4);
+    opacity: 0;
+  }
+}
+
+.animate-spark-rise {
+  animation: sparkRise 8s ease-in-out infinite;
 }

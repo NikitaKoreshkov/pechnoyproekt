@@ -11,8 +11,8 @@ interface HeroConfig {
 }
 
 const defaultConfig: HeroConfig = {
-  heroImage: '/images/1.png',
-  title: 'Трубы ПНД и комплектующие для инженерных систем',
+  heroImage: '',
+  title: 'Каталог продукции и услуг',
   subtitle: 'Надёжно. Выгодно. С гарантией качества.'
 }
 
@@ -22,25 +22,27 @@ export default function Hero({ initialConfig }: { initialConfig?: HeroConfig | n
   const [isCallbackModalOpen, setIsCallbackModalOpen] = useState(false)
   const rafRef = useRef<number | null>(null)
   const [heroConfig, setHeroConfig] = useState<HeroConfig>(initialConfig || defaultConfig)
-  const [displayImage, setDisplayImage] = useState<string>(initialConfig?.heroImage || '/images/1.png')
+  const [displayImage, setDisplayImage] = useState<string>(initialConfig?.heroImage ?? '')
 
-  // Обновляем конфиг при смене initialConfig (гидрация с сервера)
+  // Обновляем конфиг при смене initialConfig (гидрация с сервера, данные только из БД)
   useEffect(() => {
     if (initialConfig) {
       setHeroConfig(initialConfig)
-      setDisplayImage(initialConfig.heroImage || '/images/1.png')
+      if (initialConfig.heroImage) setDisplayImage(initialConfig.heroImage)
     }
   }, [initialConfig?.heroImage, initialConfig?.title, initialConfig?.subtitle])
 
-  // Подтягиваем обновления из API (например после правки в админке при открытой главной)
+  // Подтягиваем обновления из API (всегда из БД, без локальных fallback)
   useEffect(() => {
     const loadHeroConfig = async () => {
       try {
         const res = await fetch('/api/admin/hero', { cache: 'no-store' })
         if (res.ok) {
           const data = await res.json()
-          setHeroConfig(data)
-          setDisplayImage(data.heroImage || '/images/1.png')
+          if (data.heroImage) {
+            setHeroConfig(data)
+            setDisplayImage(data.heroImage)
+          }
         }
       } catch (error) {
         console.error('Error loading hero config:', error)
@@ -126,20 +128,23 @@ export default function Hero({ initialConfig }: { initialConfig?: HeroConfig | n
             transition: 'transform 0.15s ease-out'
           }}
         >
-          <Image
-            src={displayImage}
-            alt="Трубы ПНД и комплектующие"
-            fill
-            priority
-            quality={85}
-            className="object-cover"
-            sizes="100vw"
-            onLoad={() => setImageLoaded(true)}
-            onError={() => setDisplayImage('/images/1.png')}
-          />
+          {displayImage ? (
+            <Image
+              src={displayImage}
+              alt="Каталог продукции"
+              fill
+              priority
+              quality={85}
+              className="object-cover"
+              sizes="100vw"
+              onLoad={() => setImageLoaded(true)}
+            />
+          ) : (
+            <div className="absolute inset-0 bg-gray-800" />
+          )}
         </div>
-        {/* Тёмный фильтр для читаемости */}
-        <div className="absolute inset-0 bg-black/30"></div>
+        {/* Лёгкий оверлей для читаемости текста */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/10 to-black/35"></div>
       </div>
 
       {/* Контент */}
@@ -153,14 +158,11 @@ export default function Hero({ initialConfig }: { initialConfig?: HeroConfig | n
             backfaceVisibility: 'hidden'
           }}
         >
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-white mb-6 leading-tight font-inter">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-white mb-6 leading-tight font-lora tracking-tight drop-shadow-lg" style={{ textShadow: '0 2px 40px rgba(0,0,0,0.3)' }}>
             {heroConfig.title ? (
               <span className="block">{heroConfig.title}</span>
             ) : (
-              <>
-            <span className="block">Трубы ПНД</span>
-            <span className="block">и комплектующие</span>
-              </>
+              <span className="block">Каталог продукции и услуг</span>
             )}
           </h1>
         </div>
@@ -174,7 +176,7 @@ export default function Hero({ initialConfig }: { initialConfig?: HeroConfig | n
             backfaceVisibility: 'hidden'
           }}
         >
-          <p className="text-lg sm:text-xl md:text-2xl text-white mb-12 max-w-4xl font-lora italic">
+          <p className="text-lg sm:text-xl md:text-2xl text-white/95 mb-12 max-w-4xl font-lora italic tracking-wide">
             {heroConfig.subtitle || 'Качественные материалы. Быстрая доставка. Надёжные решения.'}
           </p>
         </div>
@@ -193,35 +195,41 @@ export default function Hero({ initialConfig }: { initialConfig?: HeroConfig | n
             <button
               type="button"
               onClick={() => window.dispatchEvent(new CustomEvent('open-catalog-overlay'))}
-              className="group relative px-8 py-4 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl inline-block text-center w-full sm:w-auto"
+              className="group relative px-10 py-4 text-white font-semibold tracking-widest uppercase text-sm rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-2xl inline-block text-center w-full sm:w-auto"
               style={{ 
-                backgroundColor: '#1E3A5F',
+                backgroundColor: '#1A0F0A',
                 willChange: 'transform',
-                backfaceVisibility: 'hidden'
+                backfaceVisibility: 'hidden',
+                boxShadow: '0 8px 32px rgba(26, 15, 10, 0.5), inset 0 1px 0 rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.3)'
               }}
             >
               <span className="relative z-10">Смотреть каталог</span>
             </button>
 
-            {/* Второстепенная кнопка - Оставить заявку */}
+            {/* Второстепенная кнопка — премиум золотая рамка */}
             <button 
               onClick={() => setIsCallbackModalOpen(true)}
-              className="group relative px-8 py-4 border-2 font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 inline-block text-center"
+              className="group relative px-10 py-4 border-2 font-semibold tracking-widest uppercase text-sm rounded-xl transition-all duration-300 transform hover:scale-[1.02] inline-block text-center"
               style={{ 
-                borderColor: '#4A6FA5',
-                color: 'rgba(255, 255, 255, 0.95)',
+                borderColor: 'rgba(255,255,255,0.9)',
+                color: 'rgba(255, 255, 255, 0.98)',
                 backdropFilter: 'blur(24px) saturate(180%)',
                 WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-                backgroundColor: 'rgba(30, 58, 95, 0.3)',
-                boxShadow: '0 8px 32px 0 rgba(30, 58, 95, 0.4)',
+                backgroundColor: 'rgba(26, 15, 10, 0.4)',
+                boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255,255,255,0.2)',
                 willChange: 'transform, border-color',
                 backfaceVisibility: 'hidden'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = '#6B9BD1'
+                e.currentTarget.style.borderColor = '#ffffff'
+                e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.15)'
+                e.currentTarget.style.boxShadow = '0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.3)'
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = '#4A6FA5'
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.9)'
+                e.currentTarget.style.backgroundColor = 'rgba(26, 15, 10, 0.4)'
+                e.currentTarget.style.boxShadow = '0 8px 32px 0 rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255,255,255,0.2)'
               }}
             >
               <span className="relative z-10">Оставить заявку</span>
@@ -243,7 +251,7 @@ export default function Hero({ initialConfig }: { initialConfig?: HeroConfig | n
       >
         <div className="animate-bounce">
           <svg 
-            className="w-6 h-6 text-white" 
+            className="w-6 h-6 text-white/90" 
             fill="none" 
             stroke="currentColor" 
             viewBox="0 0 24 24"

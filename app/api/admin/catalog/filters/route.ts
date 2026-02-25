@@ -58,27 +58,49 @@ const defaultFiltersConfig = {
   }
 }
 
-export async function GET() {
-  console.log('[ADMIN FILTERS GET] Loading config from DB...')
-  let cfg = await prisma.catalogFiltersConfig.findFirst()
-  console.log('[ADMIN FILTERS GET] Found config:', cfg ? 'yes' : 'no')
-  
-  if (!cfg) {
-    console.log('[ADMIN FILTERS GET] No config found, creating new one')
-    // Инициализируем пустую конфигурацию — админка позволит добавлять фильтры
-    cfg = await prisma.catalogFiltersConfig.create({ data: { config: {} } })
+export async function GET(request: Request) {
+  const session = await getServerSession(authOptions)
+  if (!ensureAdmin(session)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const { searchParams } = new URL(request.url)
+  const sectionId = searchParams.get('sectionId') || undefined
+  const subsectionId = searchParams.get('subsectionId') || undefined
+  const subsubsectionId = searchParams.get('subsubsectionId') || undefined
+
+  // Приоритет: subsectionId > subsubsectionId (используем parent subsection) > sectionId > глобальные
+  let targetSectionId = sectionId || null
+  let targetSubsectionId = subsectionId || null
+
+  if (subsubsectionId && !subsectionId) {
+    const subsub = await prisma.catalogSubsubsection.findUnique({ where: { id: subsubsectionId } })
+    if (subsub) targetSubsectionId = subsub.subsectionId
   }
-  
-  console.log('[ADMIN FILTERS GET] Config ID:', cfg.id)
-  console.log('[ADMIN FILTERS GET] Config type:', typeof cfg.config)
-  console.log('[ADMIN FILTERS GET] Config keys:', Object.keys((cfg.config || {}) as any))
-  console.log('[ADMIN FILTERS GET] Raw config:', JSON.stringify(cfg.config, null, 2))
-  
+
+  let cfg = null
+  if (targetSubsectionId) {
+    cfg = await prisma.catalogFiltersConfig.findFirst({ where: { subsectionId: targetSubsectionId } })
+  }
+  if (!cfg && targetSectionId) {
+    cfg = await prisma.catalogFiltersConfig.findFirst({ where: { sectionId: targetSectionId, subsectionId: null } })
+  }
+  if (!cfg) {
+    cfg = await prisma.catalogFiltersConfig.findFirst({ where: { sectionId: null, subsectionId: null } })
+  }
+  if (!cfg) {
+    cfg = await prisma.catalogFiltersConfig.findFirst()
+  }
+  if (!cfg) {
+    const newId = `cfg-global-${Date.now()}`
+    cfg = await prisma.catalogFiltersConfig.create({ data: { id: newId, config: {}, sectionId: null, subsectionId: null } })
+  }
+
   const { blocks, layout, ...clean } = (cfg.config || {}) as any
-  console.log('[ADMIN FILTERS GET] Clean config keys:', Object.keys(clean))
-  console.log('[ADMIN FILTERS GET] Clean config:', JSON.stringify(clean, null, 2))
-  
-  return NextResponse.json({ id: cfg.id, config: clean }, {
+  return NextResponse.json({
+    id: cfg.id,
+    config: clean,
+    sectionId: cfg.sectionId,
+    subsectionId: cfg.subsectionId
+  }, {
     headers: {
       'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
       'Pragma': 'no-cache',
@@ -113,11 +135,19 @@ export async function POST(req: Request) {
     console.log('[ADMIN FILTERS POST] Saving config with keys:', Object.keys(configToSave))
     console.log('[ADMIN FILTERS POST] Saving config:', JSON.stringify(configToSave, null, 2))
     
-    const existing = await prisma.catalogFiltersConfig.findFirst()
+    const sectionId = body.sectionId && String(body.sectionId).trim() ? body.sectionId : null
+    const subsectionId = body.subsectionId && String(body.subsectionId).trim() ? body.subsectionId : null
+
+    let existing = null
+    if (subsectionId) {
+      existing = await prisma.catalogFiltersConfig.findFirst({ where: { subsectionId } })
+    } else if (sectionId) {
+      existing = await prisma.catalogFiltersConfig.findFirst({ where: { sectionId, subsectionId: null } })
+    } else {
+      existing = await prisma.catalogFiltersConfig.findFirst({ where: { sectionId: null, subsectionId: null } })
+    }
+
     if (existing) {
-      console.log('[ADMIN FILTERS POST] Updating existing config with ID:', existing.id)
-      console.log('[ADMIN FILTERS POST] Current config in DB:', JSON.stringify(existing.config, null, 2))
-      
       const updated = await prisma.catalogFiltersConfig.update({ 
         where: { id: existing.id }, 
         data: { config: configToSave } 
@@ -137,7 +167,7 @@ export async function POST(req: Request) {
         console.error('[ADMIN FILTERS POST] MISMATCH! Saved keys:', savedKeys)
       }
       
-      return NextResponse.json({ id: updated.id, config: configToSave }, {
+      return NextResponse.json({ id: updated.id, config: configToSave, sectionId: existing.sectionId, subsectionId: existing.subsectionId }, {
       headers: {
         'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
         'Pragma': 'no-cache',
@@ -145,8 +175,15 @@ export async function POST(req: Request) {
       }
     })
   } else {
-      console.log('[ADMIN FILTERS POST] Creating new config')
-      const created = await prisma.catalogFiltersConfig.create({ data: { config: configToSave } })
+      const newId = `cfg-${subsectionId || sectionId || 'global'}-${Date.now()}`
+      const created = await prisma.catalogFiltersConfig.create({
+        data: {
+          id: newId,
+          config: configToSave,
+          sectionId: subsectionId ? null : (sectionId || null),
+          subsectionId: subsectionId || null
+        }
+      })
       console.log('[ADMIN FILTERS POST] Created successfully with ID:', created.id)
       return NextResponse.json({ id: created.id, config: configToSave }, {
       headers: {

@@ -92,7 +92,7 @@ const getContractHTML = (companyName: string) => `
 <body>
   <div class="header">
     <h1>ДОГОВОР ПОДРЯДА</h1>
-    <h2>на поставку труб ПНД и комплектующих</h2>
+    <h2>на поставку товаров и оказание услуг</h2>
   </div>
 
   <div class="date">
@@ -101,11 +101,11 @@ const getContractHTML = (companyName: string) => `
   </div>
 
   <div class="section">
-    <div class="text-bold">ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ "АКВАГАЗТЕХ"</div>
+    <div class="text-bold">${companyName.toUpperCase()}</div>
     <div class="text">ИНН: 4706094590</div>
     <div class="text">КПП: 470601001</div>
     <div class="text">ОГРН: 1254700021575</div>
-    <div class="text">Юридический адрес: 188680, РОССИЯ, ЛЕНИНГРАДСКАЯ ОБЛ, ВСЕВОЛОЖСКИЙ Р-Н, Г КОЛТУШИ, УЛ МИРА, Д 9, КВ 222</div>
+    <div class="text">Юридический адрес: Санкт-Петербург</div>
     <div class="text">Телефон: +7 (931) 302-30-08</div>
     <div class="text">Расчетный счет: 40702810710002035521</div>
     <div class="text">Банк: АО «ТБанк»</div>
@@ -129,7 +129,7 @@ const getContractHTML = (companyName: string) => `
 
   <div class="section">
     <div class="section-title">1. ПРЕДМЕТ ДОГОВОРА</div>
-    <div class="text">1.1. Поставщик обязуется поставить трубы ПНД (ПЭ) и комплектующие (далее — «Товар»), а Покупатель обязуется принять поставленный товар и оплатить его стоимость в порядке и сроки, установленные настоящим Договором.</div>
+    <div class="text">1.1. Поставщик обязуется поставить товары и оказать услуги (далее — «Товар»), а Покупатель обязуется принять поставленный товар и оплатить его стоимость в порядке и сроки, установленные настоящим Договором.</div>
     <div class="text">1.2. Технические характеристики Товара:</div>
     <div class="list-item">— Тип труб: __________________________________________________</div>
     <div class="list-item">— Диаметр: __________ мм</div>
@@ -137,10 +137,9 @@ const getContractHTML = (companyName: string) => `
     <div class="list-item">— Количество: __________ шт.</div>
     <div class="list-item">— Адрес доставки: ____________________________________</div>
     <div class="text">1.3. Поставщик поставляет следующие виды товара:</div>
-    <div class="list-item">— Трубы ПНД (ПЭ) различных диаметров</div>
-    <div class="list-item">— Фитинги и переходники</div>
-    <div class="list-item">— Краны и запорная арматура</div>
-    <div class="list-item">— Комплектующие для монтажа</div>
+    <div class="list-item">— Продукция согласно спецификации</div>
+    <div class="list-item">— Комплектующие</div>
+    <div class="list-item">— Дополнительные материалы</div>
     <div class="list-item">— Дополнительные материалы (согласно спецификации)</div>
   </div>
 
@@ -277,7 +276,7 @@ export async function GET() {
 
     // Получаем название компании из базы данных
     const footerConfig = await prisma.footerConfig.findFirst()
-    const companyName = footerConfig?.companyName || 'АкваГазТех'
+    const companyName = footerConfig?.companyName || 'Печнойпроект'
 
     // Если файла нет, генерируем PDF из HTML шаблона
     browser = await puppeteer.launch({
@@ -304,7 +303,7 @@ export async function GET() {
     return new NextResponse(pdfBuffer as unknown as BodyInit, {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': 'attachment; filename="dogovor-podryada-aquagazteh.pdf"',
+        'Content-Disposition': 'attachment; filename="dogovor-podryada.pdf"',
         'Content-Length': pdfBuffer.length.toString(),
       },
     })

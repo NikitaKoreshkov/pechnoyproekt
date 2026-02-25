@@ -57,13 +57,13 @@ export default function CallbackModal({ isOpen, onClose }: CallbackModalProps) {
       return
     }
 
-    // Формируем сообщение для WhatsApp
+    // Формируем сообщение для MAX
     const message = `Здравствуйте! Меня зовут ${name.trim()}. Мой номер телефона: ${phone.trim()}. Хочу заказать звонок.`
     
-    // Открываем WhatsApp
-    const whatsappNumber = '79313023008'
-    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
-    window.open(whatsappUrl, '_blank')
+    // Открываем MAX
+    const maxUrl = 'https://max.ru/u/f9LHodD0cOIpDPuCcMZgHcMs8Q34keKCS0fVwDTH9yLudQ6BH_47EGRwPTE'
+    const chatUrl = `${maxUrl}?text=${encodeURIComponent(message)}`
+    window.open(chatUrl, '_blank')
     
     // Сохраняем данные в localStorage для следующего раза
     if (typeof window !== 'undefined') {
@@ -91,12 +91,12 @@ export default function CallbackModal({ isOpen, onClose }: CallbackModalProps) {
       
       {/* Modal */}
       <div 
-        className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl transform transition-all duration-300"
+        className="relative w-full max-w-md bg-[#F5F0E6] rounded-2xl shadow-2xl transform transition-all duration-300 border border-[#EDE6D9]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-2xl font-semibold text-gray-900 font-inter">
+        <div className="flex items-center justify-between p-6 border-b border-[#4A2C1A]/20">
+          <h2 className="text-2xl font-semibold text-[#1A1512] font-lora">
             Заказать звонок
           </h2>
           <button 
@@ -120,7 +120,7 @@ export default function CallbackModal({ isOpen, onClose }: CallbackModalProps) {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E3A5F] focus:border-transparent outline-none transition-all"
+                className="w-full px-4 py-3 border border-[#EDE6D9] rounded-lg focus:ring-2 focus:ring-[#4A2C1A] focus:border-transparent outline-none transition-all"
                 placeholder="Введите ваше имя"
               />
             </div>
@@ -135,7 +135,7 @@ export default function CallbackModal({ isOpen, onClose }: CallbackModalProps) {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E3A5F] focus:border-transparent outline-none transition-all"
+                className="w-full px-4 py-3 border border-[#EDE6D9] rounded-lg focus:ring-2 focus:ring-[#4A2C1A] focus:border-transparent outline-none transition-all"
                 placeholder="+7 (___) ___-__-__"
               />
             </div>
@@ -143,9 +143,9 @@ export default function CallbackModal({ isOpen, onClose }: CallbackModalProps) {
             <button
               type="submit"
               disabled={!name.trim() || !phone.trim()}
-              className="w-full py-3 bg-[#1E3A5F] hover:bg-[#2C5282] text-white font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
+              className="w-full py-3 bg-[#2C1810] hover:bg-[#4A2C1A] text-white font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
             >
-              Открыть WhatsApp
+              Открыть MAX
             </button>
           </form>
         </div>

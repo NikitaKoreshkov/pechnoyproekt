@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import SparksEffect from '@/components/SparksEffect'
 
 interface Advantage {
   id: number
@@ -109,7 +110,7 @@ export default function AboutCompany() {
   // Показываем loader во время загрузки
   if (loading) {
     return (
-      <section id="about-company" className="py-24 bg-gradient-to-b from-white via-gray-50 to-white">
+      <section id="about-company" className="py-28 bg-gradient-to-b from-[#FAF7F2] via-[#F5F0E8] to-[#FAF7F2]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="animate-pulse">
@@ -128,17 +129,18 @@ export default function AboutCompany() {
   }
 
   return (
-    <section id="about-company" className="py-24 bg-gradient-to-b from-white via-gray-50 to-white">
+    <section id="about-company" className="py-28 bg-gradient-to-b from-[#FAF7F2] via-[#F5F0E8] to-[#FAF7F2]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className={`transition-all duration-1000 ${
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}>
           {/* Заголовок */}
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              <span className="block">{data.title || '«АкваГазТех» ваш надежный партнер'}</span>
+          <div className="text-center mb-20">
+            <p className="text-sm uppercase tracking-[0.3em] text-[#5C3825] mb-4 font-medium">О нас</p>
+            <h2 className="text-4xl md:text-5xl font-bold text-[#1A1210] mb-6 font-lora tracking-tight">
+              <span className="block">{data.title || 'Ваш надёжный партнёр'}</span>
             </h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-[#1E3A5F] to-[#4A6FA5] mx-auto rounded-full"></div>
+            <div className="w-24 h-px bg-gradient-to-r from-transparent via-[#1A0F0A]/30 to-transparent mx-auto mb-6"></div>
           </div>
 
           {/* Основной контент */}
@@ -160,9 +162,9 @@ export default function AboutCompany() {
             </div>
 
             {/* Правая колонка - преимущества */}
-            <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                Почему труба ПНД — лидер современных коммуникаций?
+            <div className="bg-white rounded-2xl shadow-[0_8px_40px_-12px_rgba(26,15,10,0.12)] p-8 md:p-10 border border-[#E8E2D9]">
+              <h3 className="text-2xl font-bold text-[#1A1512] mb-6 font-lora">
+                Почему выбирают нас?
               </h3>
               <div className="space-y-4">
                 {data.advantages.map((item, index) => (
@@ -183,8 +185,9 @@ export default function AboutCompany() {
 
           {/* Заключение */}
           {data.conclusion && (
-            <div className="text-center bg-gradient-to-r from-[#1E3A5F] to-[#2C5282] rounded-2xl p-12 text-white shadow-2xl">
-              <p className="text-xl md:text-2xl font-light leading-relaxed max-w-4xl mx-auto">
+            <div className="relative overflow-hidden text-center bg-gradient-to-br from-[#1A0F0A] via-[#2C1810] to-[#1A0F0A] rounded-2xl p-12 md:p-16 text-[#F5F0E8] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] border border-white/20">
+              <SparksEffect />
+              <p className="relative text-xl md:text-2xl font-light leading-relaxed max-w-4xl mx-auto tracking-wide">
                 {data.conclusion}
               </p>
             </div>

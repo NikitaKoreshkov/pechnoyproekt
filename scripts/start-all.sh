@@ -10,7 +10,7 @@ db_ready() {
   npx prisma db push --accept-data-loss 2>/dev/null
 }
 
-echo "🔧 1. PostgreSQL и база aquagazteh..."
+echo "🔧 1. PostgreSQL и база fire..."
 if db_ready; then
   echo "   ✔ Подключение к БД есть."
 else
@@ -31,7 +31,7 @@ else
       echo "   ⚠️ Не удалось подключиться к БД. Сделай:"
       echo "      ./scripts/fix-postgres.sh   # если был крах/перезагрузка"
       echo "      brew services start postgresql@14"
-      echo "      createdb aquagazteh          # если базы нет"
+      echo "      createdb fire                # если базы нет"
       echo "   Потом снова: ./scripts/start-all.sh"
       exit 1
     fi

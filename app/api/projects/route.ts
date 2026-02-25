@@ -114,22 +114,27 @@ export async function GET(request: Request) {
       buildTime, 
       completion, 
       region, 
-      image, // Главное изображение (установлено в админке)
-      images, // Дополнительные изображения
+      image,
+      images,
       tags,
       hasTerrasse,
       hasBath,
       hasGarage,
       features,
-      filterValues, // Значения для динамических фильтров
-      specs // Дополнительные опции для вычисления цены бытовок
+      filterValues,
+      specs,
+      subsectionId,
+      subsubsectionId,
+      description,
+      technicalSpecs,
+      advantages,
     }) => {
       // Используем напрямую поле image - это главное изображение, установленное в админке
       // Не ищем в массиве images, так как image - это именно то главное фото, которое выбрал пользователь
       
       return {
-        id: slug, // Используем slug как ID для совместимости с роутингом
-        slug: slug, // Добавляем отдельное поле slug для явного доступа
+        id: slug,
+        slug,
         title,
         area,
         priceFrom,
@@ -139,15 +144,20 @@ export async function GET(request: Request) {
         buildTime,
         completion,
         region,
-        image: image, // Используем главное изображение напрямую
-        images: images || [], // Возвращаем также массив дополнительных изображений
+        image,
+        images: images || [],
         tags,
         hasTerrasse,
         hasBath,
         hasGarage,
         features,
-        filterValues: filterValues || null, // Значения для динамических фильтров (null если нет значений)
-        specs: specs || null // Дополнительные опции для вычисления цены бытовок
+        filterValues: filterValues || null,
+        specs: specs || null,
+        subsectionId: subsectionId || null,
+        subsubsectionId: subsubsectionId || null,
+        description: description || null,
+        technicalSpecs: technicalSpecs || null,
+        advantages: advantages || [],
       }
     })
     

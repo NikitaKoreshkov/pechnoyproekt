@@ -3,7 +3,7 @@
 import { useState } from 'react'
 
 interface SortState {
-  field: 'popularity' | 'price' | 'new'
+  field: 'price' | 'new'
   direction: 'asc' | 'desc'
 }
 
@@ -38,7 +38,6 @@ export default function CatalogSortBar({
   const [isSortVisible, setIsSortVisible] = useState(false)
 
   const sortOptions = [
-    { value: 'popularity', label: 'Популярности' },
     { value: 'price', label: 'Цене' },
     { value: 'new', label: 'Новизне' }
   ]
@@ -51,15 +50,15 @@ export default function CatalogSortBar({
         direction: sort.direction === 'asc' ? 'desc' : 'asc'
       })
     } else {
-      // Если новое поле, ставим по умолчанию desc
+      // Если новое поле: для новизны — asc (1–100), для цены — desc
       onSortChange({
         field: field as any,
-        direction: 'desc'
+        direction: field === 'new' ? 'asc' : 'desc'
       })
     }
   }
 
-  const currentSortLabel = sortOptions.find(o => o.value === sort.field)?.label || 'Популярности'
+  const currentSortLabel = sortOptions.find(o => o.value === sort.field)?.label || 'Новизне'
 
   return (
     <div className={`bg-white lg:hidden sticky z-40 ${isFading ? 'opacity-0 -translate-y-2 invisible' : 'opacity-100 translate-y-0 visible'} transition-all duration-300`}

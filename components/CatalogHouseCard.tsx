@@ -119,7 +119,7 @@ export default function CatalogHouseCard({
                 {house.title}
               </h3>
               <div className="text-sm text-gray-500 mb-2">
-                {house.area} мм
+                {house.area} м²
               </div>
               <div className="text-sm text-gray-500 mb-2 capitalize">
                 {house.material}

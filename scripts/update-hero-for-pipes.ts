@@ -27,7 +27,7 @@ async function updateHeroForPipes() {
     } else {
       const created = await prisma.heroConfig.create({
         data: {
-          heroImage: '/images/house.jpg',
+          heroImage: '/images/main.png',
           title: 'Качественные трубы ПНД для ваших проектов',
           subtitle: 'Надёжно. Выгодно. С гарантией качества.'
         }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
+import SparksEffect from '@/components/SparksEffect'
 
 interface Review {
   id: string
@@ -152,9 +153,10 @@ export default function ReviewsGallery() {
 
   if (loading) {
     return (
-      <section id="reviews-gallery" className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto" style={{ borderColor: '#1E3A5F' }}></div>
+      <section id="reviews-gallery" className="relative overflow-hidden py-24 bg-[#1A0F0A]">
+        <SparksEffect />
+        <div className="relative z-10 max-w-7xl mx-auto px-4 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white/50 mx-auto"></div>
         </div>
       </section>
     )
@@ -183,7 +185,7 @@ export default function ReviewsGallery() {
       <svg
         key={index}
         className={`w-5 h-5 ${
-          index < rating ? 'text-[#1E3A5F]' : 'text-gray-300'
+          index < rating ? 'text-amber-400' : 'text-white/30'
         }`}
         fill="currentColor"
         viewBox="0 0 20 20"
@@ -194,14 +196,17 @@ export default function ReviewsGallery() {
   }
 
   return (
-    <section id="reviews-gallery" className="py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="reviews-gallery" className="relative overflow-hidden py-24 bg-[#1A0F0A]">
+      <SparksEffect />
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Заголовок */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-20">
+          <p className="text-sm uppercase tracking-[0.3em] text-white/80 mb-4 font-medium">Отзывы</p>
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 font-lora tracking-tight">
             {config.title}
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto whitespace-pre-line">
+          <div className="w-24 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent mx-auto mb-6"></div>
+          <p className="text-lg text-white/80 max-w-2xl mx-auto whitespace-pre-line leading-relaxed">
             {config.description}
           </p>
         </div>
@@ -210,10 +215,10 @@ export default function ReviewsGallery() {
         <div className={`transition-all duration-500 ${
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}>
-          <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+          <div className="bg-white/5 backdrop-blur-sm rounded-2xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.3)] overflow-hidden border border-white/20">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
               {/* Фото */}
-              <div className="relative h-96 lg:h-auto lg:min-h-[400px] overflow-hidden group bg-gray-200">
+              <div className="relative h-56 sm:h-72 md:h-80 lg:h-auto lg:min-h-[400px] overflow-hidden group bg-white/10">
                 {reviewsData[currentReview]?.image && (
                   <div 
                     key={`image-${currentReview}`}
@@ -265,7 +270,7 @@ export default function ReviewsGallery() {
                 <div className="absolute bottom-4 right-4 flex gap-2">
                   <button
                     onClick={prevReview}
-                    className="w-10 h-10 bg-white/90 hover:bg-white text-gray-700 rounded-full flex items-center justify-center transition-colors duration-200"
+                    className="w-10 h-10 bg-white/20 hover:bg-white/30 border border-white/30 text-white rounded-full flex items-center justify-center transition-colors duration-200"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -273,7 +278,7 @@ export default function ReviewsGallery() {
                   </button>
                   <button
                     onClick={nextReview}
-                    className="w-10 h-10 bg-white/90 hover:bg-white text-gray-700 rounded-full flex items-center justify-center transition-colors duration-200"
+                    className="w-10 h-10 bg-white/20 hover:bg-white/30 border border-white/30 text-white rounded-full flex items-center justify-center transition-colors duration-200"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -283,7 +288,7 @@ export default function ReviewsGallery() {
               </div>
 
               {/* Отзыв */}
-              <div className="p-8 lg:p-12 flex flex-col justify-center">
+              <div className="p-4 sm:p-6 lg:p-12 flex flex-col justify-center">
                 <div 
                   key={`content-${currentReview}`}
                   className={`transition-all duration-500 ${
@@ -294,23 +299,23 @@ export default function ReviewsGallery() {
                     <div className="flex items-center mb-4">
                       {renderStars(reviewsData[currentReview].rating)}
                     </div>
-                    <blockquote className="text-lg text-gray-700 leading-relaxed mb-6">
+                    <blockquote className="text-base sm:text-lg text-white/90 leading-relaxed mb-4 sm:mb-6 line-clamp-4 sm:line-clamp-none">
                       "{reviewsData[currentReview].text}"
                     </blockquote>
                   </div>
 
-                  <div className="border-t pt-6">
+                  <div className="border-t border-white/20 pt-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="text-xl font-semibold text-gray-900">
+                        <h4 className="text-base sm:text-xl font-semibold text-white">
                           {reviewsData[currentReview].name}
                         </h4>
-                        <p className="text-gray-600">
+                        <p className="text-white/70">
                           {reviewsData[currentReview].city} • {reviewsData[currentReview].date}
                         </p>
                       </div>
                       <div className="text-right">
-                        <div className="text-2xl font-bold" style={{ color: '#1E3A5F' }}>
+                        <div className="text-2xl font-bold text-white">
                           {reviewsData[currentReview].rating}/5
                         </div>
                       </div>
@@ -334,9 +339,8 @@ export default function ReviewsGallery() {
                   }, 300)
                 }}
                 className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  index === currentReview ? 'w-8' : 'bg-gray-300 hover:bg-gray-400'
+                  index === currentReview ? 'w-8 bg-white' : 'bg-white/40 hover:bg-white/60'
                 }`}
-                style={index === currentReview ? { backgroundColor: '#1E3A5F' } : {}}
               />
             ))}
           </div>

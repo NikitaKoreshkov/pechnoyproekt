@@ -1,12 +1,12 @@
 #!/bin/bash
 # Создание новой базы данных для проекта (trybi / AquaGazTeh) и при необходимости миграция из старой.
 # Запуск из корня проекта: ./scripts/create-new-database.sh [имя_базы]
-# Пример с миграцией из старой БД: OLD_DATABASE_URL="postgresql://nikitos@localhost:5432/mydb" ./scripts/create-new-database.sh aquagazteh
+# Пример с миграцией из старой БД: OLD_DATABASE_URL="postgresql://nikitos@localhost:5432/mydb" ./scripts/create-new-database.sh fire
 
 set -e
 cd "$(dirname "$0")/.."
 
-NEW_DB_NAME="${1:-aquagazteh}"
+NEW_DB_NAME="${1:-fire}"
 # Пользователь PostgreSQL: из DATABASE_URL в .env или переменная PGUSER или nikitos
 PG_USER="${PGUSER:-nikitos}"
 if [ -f ".env" ] && grep -q '^DATABASE_URL=' .env 2>/dev/null; then

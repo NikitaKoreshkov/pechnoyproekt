@@ -42,7 +42,7 @@ interface FilterState {
 }
 
 interface SortState {
-  field: 'popularity' | 'price' | 'new'
+  field: 'price' | 'new'
   direction: 'asc' | 'desc'
 }
 
@@ -110,7 +110,7 @@ function CatalogPageContent() {
             setFilteredHouses([])
             return
           }
-          const data = await res.json()
+          let data = await res.json()
           const converted: House[] = (data || []).map((p: any) => ({
             id: p.id,
             title: p.title,
@@ -550,7 +550,11 @@ function CatalogPageContent() {
               : `sectionId=${encodeURIComponent(sectionId!)}`
           const res = await fetch(`/api/projects?${param}&t=${Date.now()}`, { cache: 'no-store' })
           if (!res.ok) return
-          const data = await res.json()
+          let data = await res.json()
+          if (!data || data.length === 0) {
+            const fallbackRes = await fetch('/api/projects?t=' + Date.now(), { cache: 'no-store' })
+            if (fallbackRes.ok) data = await fallbackRes.json()
+          }
           const converted: House[] = (data || []).map((p: any) => ({
             id: p.id,
             title: p.title,
@@ -799,6 +803,10 @@ function CatalogPageContent() {
     let lastFiltersVisible = true
     let lastStickyState = false
     let lastTopOffset = 64
+    if (siteHeader) {
+      lastTopOffset = siteHeader.getBoundingClientRect().height
+      setTopOffset(lastTopOffset)
+    }
     
     const optimizedHandleScroll = () => {
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop
@@ -821,6 +829,7 @@ function CatalogPageContent() {
         if (calculatedOffset !== lastTopOffset) {
           headerElement.style.top = `${calculatedOffset}px`
           lastTopOffset = calculatedOffset
+          setTopOffset(calculatedOffset)
         }
       }
       
@@ -909,8 +918,8 @@ function CatalogPageContent() {
           searchQuery: parsed.searchQuery || ''
         }
       }
-    } catch (error) {
-      console.error('Error loading filters from localStorage:', error)
+    } catch {
+      // ignore
     }
 
     return defaultFilters
@@ -930,15 +939,15 @@ function CatalogPageContent() {
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem('catalog-filters', JSON.stringify(filters))
-      } catch (error) {
-        console.error('Error saving filters to localStorage:', error)
+      } catch {
+        // ignore
       }
     }
   }, [filters])
 
   const defaultSort: SortState = {
-    field: 'popularity',
-    direction: 'desc'
+    field: 'new',
+    direction: 'asc'
   }
 
   // Загрузка сортировки из localStorage (используем ТОЛЬКО на клиенте после монтирования)
@@ -952,7 +961,7 @@ function CatalogPageContent() {
       if (saved) {
         const parsed = JSON.parse(saved)
         // Валидация
-        if (parsed.field && ['popularity', 'price', 'new'].includes(parsed.field)) {
+        if (parsed.field && ['price', 'new'].includes(parsed.field)) {
           return {
             field: parsed.field,
             direction: parsed.direction === 'asc' ? 'asc' : 'desc'
@@ -1025,14 +1034,10 @@ function CatalogPageContent() {
 
     // Динамические фильтры (все фильтры кроме известных)
     const knownFilterKeys = new Set(['priceRange', 'areaRange', 'material', 'buildTime', 'features', 'searchQuery'])
-    console.log('[CATALOG FILTER] All filters keys:', Object.keys(filters))
-    console.log('[CATALOG FILTER] Known filter keys:', Array.from(knownFilterKeys))
-    console.log('[CATALOG FILTER] Dynamic filter keys:', Object.keys(filters).filter(k => !knownFilterKeys.has(k)))
     
     Object.keys(filters).forEach(filterKey => {
       if (!knownFilterKeys.has(filterKey)) {
         const filterValue = (filters as any)[filterKey]
-        console.log('[CATALOG FILTER] Processing dynamic filter:', filterKey, 'value:', filterValue, 'type:', typeof filterValue, 'isArray:', Array.isArray(filterValue))
         
         if (filterValue !== undefined && filterValue !== null && filterValue !== '' && 
             (Array.isArray(filterValue) ? filterValue.length > 0 : true)) {
@@ -1046,88 +1051,62 @@ function CatalogPageContent() {
             // Поэтому применяем фильтр всегда, если диапазон задан
           }
           
-          const beforeCount = filtered.length
           filtered = filtered.filter((house: any) => {
             const houseFilterValues = (house.filterValues && typeof house.filterValues === 'object') ? house.filterValues : {}
             const houseValue = houseFilterValues[filterKey]
             
-            console.log('[FILTER] Filter key:', filterKey)
-            console.log('[FILTER] Filter value:', filterValue, 'type:', typeof filterValue)
-            console.log('[FILTER] House ID:', house.id)
-            console.log('[FILTER] House filterValues:', houseFilterValues)
-            console.log('[FILTER] House value for key:', houseValue, 'type:', typeof houseValue)
-            
-            // Сначала проверяем range (массив из 2 чисел)
             if (Array.isArray(filterValue) && filterValue.length === 2 && typeof filterValue[0] === 'number') {
-              console.log('[FILTER] Range filter')
-              // Если у проекта нет значения для этого фильтра - скрываем проект
-              if (houseValue === undefined || houseValue === null) {
-                console.log('[FILTER] Range - no houseValue, hiding project')
-                return false
-              }
-              
-              // Для range - проверяем диапазон (если houseValue это число или массив из 2 чисел)
+              if (houseValue === undefined || houseValue === null) return false
               if (typeof houseValue === 'number') {
-                // Проверяем, попадает ли значение в диапазон
-                const result = houseValue >= filterValue[0] && houseValue <= filterValue[1]
-                console.log('[FILTER] Range result (number):', result, 'houseValue:', houseValue, 'range:', filterValue)
-                return result
+                return houseValue >= filterValue[0] && houseValue <= filterValue[1]
               } else if (Array.isArray(houseValue) && houseValue.length === 2) {
-                // Если у проекта диапазон значений, проверяем пересечение
-                const result = !(houseValue[1] < filterValue[0] || houseValue[0] > filterValue[1])
-                console.log('[FILTER] Range result (array):', result, 'houseValue:', houseValue, 'range:', filterValue)
-                return result
+                return !(houseValue[1] < filterValue[0] || houseValue[0] > filterValue[1])
               }
-              console.log('[FILTER] Range - houseValue is neither number nor array[2], hiding project')
-              return false // Если формат не распознан - скрываем проект
+              return false
             } else if (Array.isArray(filterValue)) {
               // Для checkboxes - проверяем что хотя бы одно значение совпадает
-              // Если у проекта нет значения - скрываем проект
+              // houseValue может быть строкой (из filterValues в БД) или массивом
               if (houseValue === undefined || houseValue === null) {
-                console.log('[FILTER] Checkboxes - no houseValue, hiding project')
                 return false
               }
-              if (!Array.isArray(houseValue)) {
-                console.log('[FILTER] Checkboxes - houseValue is not an array, hiding project')
-                return false
+              let result: boolean
+              if (Array.isArray(houseValue)) {
+                result = filterValue.some((fv: any) => houseValue.includes(fv))
+              } else {
+                // houseValue — строка (напр. duhovka: "Есть", plita: "410мм*340мм")
+                result = filterValue.includes(houseValue)
               }
-              const result = filterValue.some((fv: any) => houseValue.includes(fv))
-              console.log('[FILTER] Checkboxes result:', result, 'filterValue:', filterValue, 'houseValue:', houseValue)
               return result
             } else {
-              // Для radio - точное совпадение
-              // Если у проекта нет значения - скрываем проект
-              if (houseValue === undefined || houseValue === null) {
-                console.log('[FILTER] Radio - no houseValue, hiding project')
-                return false
-              }
-              const result = houseValue === filterValue
-              console.log('[FILTER] Radio result:', result, 'houseValue:', houseValue, 'filterValue:', filterValue)
-              return result
+              if (houseValue === undefined || houseValue === null) return false
+              return houseValue === filterValue
             }
           })
-          const afterCount = filtered.length
-          console.log('[CATALOG FILTER] Filter', filterKey, 'reduced from', beforeCount, 'to', afterCount, 'projects')
         }
       }
     })
 
     // Сортировка
+    const extractOrderNumber = (title: string): number => {
+      const m = title.match(/(\d+)/)
+      return m ? parseInt(m[1], 10) : 0
+    }
+
     filtered.sort((a, b) => {
       let aValue: number, bValue: number
-      
+
       switch (sort.field) {
         case 'price':
           aValue = a.price
           bValue = b.price
           break
         case 'new':
-          aValue = a.tags.includes('новый') ? 1 : 0
-          bValue = b.tags.includes('новый') ? 1 : 0
+          aValue = extractOrderNumber(a.title)
+          bValue = extractOrderNumber(b.title)
           break
-        default: // popularity
-          aValue = a.tags.includes('бестселлер') ? 2 : (a.tags.includes('премиум') ? 1 : 0)
-          bValue = b.tags.includes('бестселлер') ? 2 : (b.tags.includes('премиум') ? 1 : 0)
+        default:
+          aValue = extractOrderNumber(a.title)
+          bValue = extractOrderNumber(b.title)
       }
 
       return sort.direction === 'asc' ? aValue - bValue : bValue - aValue
@@ -1155,12 +1134,12 @@ function CatalogPageContent() {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-gray-50 pt-16">
+      <div className="min-h-screen bg-gradient-to-b from-[#FAF7F2] via-[#F5F0E8] to-[#EDE8E0] pt-16 overflow-visible">
 
         {/* Заголовок раздела и панель управления - прижаты по краям */}
         <div 
           id="catalog-header"
-          className={`hidden lg:block w-full backdrop-blur-xl bg-white/5 border-b border-white/20 catalog-header-panel ${isSticky ? 'sticky z-50' : ''} ${isFading ? 'opacity-0 -translate-y-4 invisible' : 'opacity-100 translate-y-0 visible'} transition-all duration-500`}
+          className={`hidden lg:block w-full backdrop-blur-xl bg-white/80 border-b border-[#E8E2D9] catalog-header-panel ${isSticky ? 'sticky z-50' : ''} ${isFading ? 'opacity-0 -translate-y-4 invisible' : 'opacity-100 translate-y-0 visible'} transition-all duration-500 shadow-[0_4px_24px_-4px_rgba(26,15,10,0.06)]`}
           style={isSticky ? { 
             top: `${topOffset}px`
           } : {}}
@@ -1168,7 +1147,7 @@ function CatalogPageContent() {
             <div className={`w-full transition-all duration-500 ${isCompact ? 'py-3' : 'py-6'}`}>
             {/* Строка: слева - заголовок, справа - кнопки */}
             <div className="flex items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-              <h2 className={`font-semibold text-gray-900 transition-all duration-500 ${isCompact ? 'text-xl' : 'text-2xl'}`}>Проекты и комплектации ({filteredHouses.length})</h2>
+              <h2 className={`font-semibold text-[#1A1210] font-lora transition-all duration-500 ${isCompact ? 'text-xl' : 'text-2xl'}`}>Проекты и комплектации ({filteredHouses.length})</h2>
               
               {/* Кнопки "Скрыть фильтры" и "Сортировка" - справа */}
               <div className="hidden lg:flex items-center gap-3">
@@ -1178,8 +1157,8 @@ function CatalogPageContent() {
                     isCompact ? 'px-3 py-1.5 text-xs' : 'px-4 py-2 text-sm'
                   } ${
                     isFiltersVisible 
-                      ? 'bg-[#1E3A5F] text-white' 
-                      : 'bg-white text-gray-700 border border-gray-300'
+                      ? 'bg-[#1A0F0A] text-white' 
+                      : 'bg-white text-[#1A1210] border border-[#E8E2D9]'
                   }`}
                 >
                   <span>{isFiltersVisible ? 'Скрыть фильтры' : 'Показать фильтры'}</span>
@@ -1190,7 +1169,7 @@ function CatalogPageContent() {
 
                 <button
                   onClick={() => setIsSortOpen(!isSortOpen)}
-                  className={`flex items-center gap-2 font-medium bg-white text-gray-700 border border-gray-300 rounded-md transition-all duration-500 ${
+                  className={`flex items-center gap-2 font-medium bg-white text-[#1A1210] border border-[#E8E2D9] rounded-xl transition-all duration-500 ${
                     isCompact ? 'px-3 py-1.5 text-xs' : 'px-4 py-2 text-sm'
                   }`}
                 >
@@ -1213,12 +1192,11 @@ function CatalogPageContent() {
         {isSortOpen && (
           <div className={`w-full ${isSticky ? 'sticky z-40' : ''}`} style={isSticky ? { top: `${topOffset + catalogHeaderHeight}px` } : {}}>
             <div className="flex justify-end px-4 sm:px-6 lg:px-8">
-              <div className="border border-gray-200 rounded-lg bg-white p-4 shadow-sm">
+              <div className="border border-[#E8E2D9] rounded-xl bg-white p-4 shadow-[0_4px_24px_-4px_rgba(26,15,10,0.08)]">
                 <div className="flex items-center space-x-4">
                   <span className="text-sm text-gray-500 font-medium whitespace-nowrap">Сортировать по:</span>
                   <div className="flex flex-wrap gap-2">
                     {[
-                      { value: 'popularity', label: 'Популярности' },
                       { value: 'price', label: 'Цене' },
                       { value: 'new', label: 'Новизне' }
                     ].map((option) => (
@@ -1233,14 +1211,14 @@ function CatalogPageContent() {
                           } else {
                             setSort({
                               field: option.value as any,
-                              direction: 'desc'
+                              direction: option.value === 'new' ? 'asc' : 'desc'
                             })
                           }
                         }}
                         className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                          sort.field === option.value 
-                            ? 'bg-[#1E3A5F] text-white' 
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            sort.field === option.value 
+                            ? 'bg-[#1A0F0A] text-white' 
+                            : 'bg-[#FAF7F2] text-[#1A1210] hover:bg-[#F5F0E8]'
                         }`}
                       >
                         <span>{option.label}</span>
@@ -1280,9 +1258,9 @@ function CatalogPageContent() {
           isFading={isFading}
         />
 
-        <div id="catalog-filters-wrapper" className="flex py-8">
-          {/* Панель фильтров - прижата к левому краю (только на десктопе) */}
-          <div className="hidden lg:block">
+        <div id="catalog-filters-wrapper" className="flex py-8 items-stretch overflow-visible">
+          {/* Родитель sticky: self-stretch чтобы колонка была высокой, ring для отладки */}
+          <div className="hidden lg:block self-stretch overflow-visible min-w-[320px]">
             <CatalogFilters
               filters={filters}
               onFiltersChange={setFilters}
@@ -1290,6 +1268,8 @@ function CatalogPageContent() {
               isVisible={isFiltersVisible}
               isHeaderSticky={isSticky}
               headerHeight={isSticky ? topOffset + catalogHeaderHeight : 96}
+              subsectionId={subsectionId}
+              sectionId={sectionId}
             />
           </div>
 
@@ -1306,18 +1286,19 @@ function CatalogPageContent() {
         </div>
 
         {/* Призыв к действию */}
-        <div className="bg-white py-16">
+        <div className="bg-white/80 border-t border-[#E8E2D9] py-16">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <p className="text-sm uppercase tracking-[0.3em] text-[#5C3825] mb-4 font-medium">Калькулятор</p>
+            <h2 className="text-3xl font-bold text-[#1A1210] mb-4 font-lora">
               Не нашли подходящее?
             </h2>
-            <p className="text-xl text-gray-600 mb-8">
-              Рассчитайте свой индивидуальный проект
+            <p className="text-xl text-[#5C3825]/90 mb-8">
+              Печнойпроект разрабатывает печные комплексы, мангалы и барбекю по индивидуальным чертежам. Укажите параметры — получите предварительную стоимость и консультацию специалиста.
             </p>
             <div className="flex justify-center">
               <Link 
                 href={{ pathname: '/', hash: 'calculator' }}
-                className="px-8 py-3 border-2 border-[#1E3A5F] text-[#1E3A5F] hover:bg-[#1E3A5F] hover:text-white font-semibold rounded-lg transition-all duration-200 inline-block"
+                className="inline-flex items-center px-8 py-4 bg-[#1A0F0A] hover:bg-[#2C1810] text-white font-semibold rounded-xl transition-all duration-300 shadow-[0_4px_20px_-4px_rgba(26,15,10,0.3)] hover:shadow-[0_8px_30px_-4px_rgba(26,15,10,0.4)] tracking-wider"
               >
                 Рассчитать индивидуальный проект
               </Link>
@@ -1335,6 +1316,8 @@ function CatalogPageContent() {
           onResetFilters={resetFilters}
           isOpen={isMobileFiltersOpen}
           onClose={() => setIsMobileFiltersOpen(false)}
+          subsectionId={subsectionId}
+          sectionId={sectionId}
         />
       </div>
       <Footer />
@@ -1345,8 +1328,8 @@ function CatalogPageContent() {
 export default function CatalogPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <span className="text-gray-500">Загрузка каталога…</span>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#FAF7F2] to-[#F5F0E8]">
+        <span className="text-[#5C3825]/90">Загрузка каталога…</span>
       </div>
     }>
       <CatalogPageContent />

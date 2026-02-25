@@ -14,43 +14,106 @@ type FilterConfig = {
 
 type FiltersConfig = Record<string, FilterConfig>
 
+type Section = {
+  id: string
+  title: string
+  slug: string
+  subsections: {
+    id: string
+    title: string
+    slug: string
+    sectionId: string
+    subsubsections?: { id: string; title: string; slug: string }[]
+  }[]
+}
+
 export default function CatalogFiltersEditorPage() {
-  const [cfg, setCfg] = useState<{ id: string; config: FiltersConfig } | null>(null)
+  const [sections, setSections] = useState<Section[]>([])
+  const [selected, setSelected] = useState<{ type: 'global' | 'section' | 'subsection' | 'subsubsection'; sectionId?: string; subsectionId?: string; subsubsectionId?: string; title: string } | null>(null)
+  const [cfg, setCfg] = useState<{ id: string; config: FiltersConfig; sectionId?: string | null; subsectionId?: string | null } | null>(null)
   const [loading, setLoading] = useState(false)
+  const [loadingFilters, setLoadingFilters] = useState(false)
   const [newKey, setNewKey] = useState('')
   const [newTitle, setNewTitle] = useState('')
   const [newType, setNewType] = useState<'range' | 'checkboxes' | 'radio'>('checkboxes')
 
-  const load = async () => {
+  const loadSections = async () => {
     try {
-    const res = await fetch('/api/admin/catalog/filters?t=' + Date.now(), { cache: 'no-store', credentials: 'include' })
+      const res = await fetch('/api/admin/catalog/sections', { cache: 'no-store', credentials: 'include' })
+      if (res.ok) setSections(await res.json())
+    } catch (e) {
+      console.error('Error loading sections:', e)
+    }
+  }
+
+  const loadFilters = async (sectionId?: string | null, subsectionId?: string, subsubsectionId?: string) => {
+    setLoadingFilters(true)
+    try {
+      const params = new URLSearchParams()
+      if (sectionId) params.set('sectionId', sectionId)
+      if (subsectionId) params.set('subsectionId', subsectionId)
+      if (subsubsectionId) params.set('subsubsectionId', subsubsectionId)
+      // Без параметров — глобальные фильтры
+      const res = await fetch(`/api/admin/catalog/filters?${params}`, { cache: 'no-store', credentials: 'include' })
       if (res.ok) {
         const data = await res.json()
-        console.log('[ADMIN PAGE] Loaded config:', data)
-        console.log('[ADMIN PAGE] Loaded config keys:', Object.keys(data.config || {}))
-        setCfg({ id: data.id, config: data.config || {} })
-  } else {
-        console.error('[ADMIN PAGE] Load failed with status:', res.status)
-        const errorText = await res.text()
-        console.error('[ADMIN PAGE] Load error:', errorText)
+        setCfg({ id: data.id, config: data.config || {}, sectionId: data.sectionId, subsectionId: data.subsectionId })
+      } else {
+        setCfg({ id: '', config: {}, sectionId: sectionId || null, subsectionId: subsectionId || null })
       }
-    } catch (error) {
-      console.error('[ADMIN PAGE] Error loading filters config:', error)
+    } catch (e) {
+      console.error('Error loading filters:', e)
+      setCfg(null)
+    } finally {
+      setLoadingFilters(false)
     }
   }
 
   useEffect(() => {
-    load()
+    loadSections()
   }, [])
+
+  useEffect(() => {
+    if (selected) {
+      if (selected.type === 'global') {
+        loadFilters(null, undefined, undefined)
+      } else if (selected.type === 'section' && selected.sectionId) {
+        loadFilters(selected.sectionId, undefined, undefined)
+      } else if (selected.type === 'subsection' && selected.subsectionId) {
+        const sec = sections.flatMap(s => s.subsections).find(sb => sb.id === selected.subsectionId)
+        loadFilters(sec?.sectionId, selected.subsectionId, undefined)
+      } else if (selected.type === 'subsubsection' && selected.subsubsectionId) {
+        const allSubs = sections.flatMap(s => s.subsections)
+        const subsub = allSubs.flatMap(sb => (sb.subsubsections || []).map(ss => ({ ...ss, _subsectionId: sb.id, _sectionId: sb.sectionId })))
+          .find(ss => ss.id === selected.subsubsectionId)
+        if (subsub) loadFilters(subsub._sectionId, subsub._subsectionId, selected.subsubsectionId)
+      }
+    } else {
+      setCfg(null)
+    }
+  }, [selected, sections])
+
+  const selectGlobal = () => {
+    setSelected({ type: 'global', title: 'Глобальные (по умолчанию)' })
+  }
+
+  const selectSection = (s: Section) => {
+    setSelected({ type: 'section', sectionId: s.id, title: s.title })
+  }
+
+  const selectSubsection = (s: Section, sb: { id: string; title: string }) => {
+    setSelected({ type: 'subsection', sectionId: s.id, subsectionId: sb.id, title: `${s.title} → ${sb.title}` })
+  }
+
+  const selectSubsubsection = (s: Section, sb: { id: string; title: string }, ss: { id: string; title: string }) => {
+    setSelected({ type: 'subsubsection', sectionId: s.id, subsectionId: sb.id, subsubsectionId: ss.id, title: `${s.title} → ${sb.title} → ${ss.title}` })
+  }
 
   const updateFilter = (key: keyof FiltersConfig, updates: Partial<FilterConfig>) => {
     if (!cfg) return
     setCfg({
       ...cfg,
-      config: {
-        ...cfg.config,
-        [key]: { ...cfg.config[key], ...updates } as FilterConfig
-      }
+      config: { ...cfg.config, [key]: { ...cfg.config[key], ...updates } as FilterConfig }
     })
   }
 
@@ -59,7 +122,7 @@ export default function CatalogFiltersEditorPage() {
     const key = newKey.trim()
     if (!key) return alert('Укажите ключ фильтра (латиница/цифры/нижнее подчёркивание)')
     if (cfg.config[key]) return alert('Такой ключ уже существует')
-    const base: FilterConfig = newType === 'range' 
+    const base: FilterConfig = newType === 'range'
       ? { title: newTitle || key, type: 'range', min: 0, max: 100, step: 1 }
       : { title: newTitle || key, type: newType, options: [{ label: '', value: '' }] }
     setCfg({ ...cfg, config: { ...cfg.config, [key]: base } })
@@ -76,21 +139,17 @@ export default function CatalogFiltersEditorPage() {
     if (!cfg || !cfg.config[key]) return
     const filter = cfg.config[key]!
     if (!filter.options) filter.options = []
-    updateFilter(key, {
-      options: [...filter.options, { label: '', value: '' }]
-    })
+    updateFilter(key, { options: [...filter.options, { label: '', value: '' }] })
   }
 
   const removeOption = (key: keyof FiltersConfig, index: number) => {
-    if (!cfg || !cfg.config[key] || !cfg.config[key]!.options) return
+    if (!cfg || !cfg.config[key]?.options) return
     const filter = cfg.config[key]!
-    updateFilter(key, {
-      options: filter.options!.filter((_, i) => i !== index)
-    })
+    updateFilter(key, { options: filter.options!.filter((_, i) => i !== index) })
   }
 
   const updateOption = (key: keyof FiltersConfig, index: number, field: 'label' | 'value', value: string | number) => {
-    if (!cfg || !cfg.config[key] || !cfg.config[key]!.options) return
+    if (!cfg || !cfg.config[key]?.options) return
     const filter = cfg.config[key]!
     const newOptions = [...filter.options!]
     newOptions[index] = { ...newOptions[index], [field]: value }
@@ -98,85 +157,37 @@ export default function CatalogFiltersEditorPage() {
   }
 
   const save = async () => {
-    if (!cfg) return
+    if (!cfg || !selected) return
     setLoading(true)
     try {
-      // Глубокая копия, чтобы убрать Proxy/ссылки React state
       const clean = JSON.parse(JSON.stringify(cfg.config || {}))
-      console.log('[ADMIN PAGE] Sending config:', clean)
-      console.log('[ADMIN PAGE] Config keys:', Object.keys(clean))
-      
-      const res = await fetch('/api/admin/catalog/filters', { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json' }, 
-        body: JSON.stringify({ config: clean }),
+      const body: any = { config: clean }
+      if (selected.type === 'section' && selected.sectionId) body.sectionId = selected.sectionId
+      if ((selected.type === 'subsection' || selected.type === 'subsubsection') && selected.subsectionId) body.subsectionId = selected.subsectionId
+
+      const res = await fetch('/api/admin/catalog/filters', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
         cache: 'no-store',
         credentials: 'include'
       })
-      
-      console.log('[ADMIN PAGE] Response status:', res.status)
-      console.log('[ADMIN PAGE] Response ok:', res.ok)
-      
       if (res.ok) {
         const result = await res.json()
-        console.log('[ADMIN PAGE] Saved result:', result)
-        console.log('[ADMIN PAGE] Result config keys:', Object.keys(result.config || {}))
-        
-        // Обновляем состояние сразу из ответа сервера
-        setCfg({ id: result.id, config: result.config })
-        
-        // Перечитываем с сервера через небольшую задержку, чтобы убедиться, что в БД сохранилось
-        await new Promise(resolve => setTimeout(resolve, 500))
-        await load()
-        
-        // Проверяем, что данные действительно сохранились
-        const reloaded = await fetch('/api/admin/catalog/filters?t=' + Date.now(), { cache: 'no-store', credentials: 'include' })
-        if (reloaded.ok) {
-          const reloadedData = await reloaded.json()
-          console.log('[ADMIN PAGE] Reloaded config keys:', Object.keys(reloadedData.config || {}))
-          const reloadedKeys = Object.keys(reloadedData.config || {})
-          const sentKeys = Object.keys(clean)
-          
-          if (reloadedKeys.length !== sentKeys.length || !sentKeys.every(k => reloadedKeys.includes(k))) {
-            console.warn('[ADMIN PAGE] Config mismatch after save!')
-            console.warn('[ADMIN PAGE] Sent keys:', sentKeys)
-            console.warn('[ADMIN PAGE] Reloaded keys:', reloadedKeys)
-            alert('⚠️ Данные сохранены, но могут отличаться от ожидаемых. Проверьте консоль.')
-          } else {
-            alert('✅ Фильтры каталога успешно сохранены!')
-          }
-        } else {
-          console.error('[ADMIN PAGE] Failed to reload config')
-          alert('⚠️ Данные сохранены, но не удалось проверить. Обновите страницу.')
-        }
+        setCfg({ id: result.id, config: result.config, sectionId: result.sectionId, subsectionId: result.subsectionId })
+        alert('✅ Фильтры сохранены!')
       } else {
-        const errorText = await res.text()
-        console.error('[ADMIN PAGE] Error response:', errorText)
-        let errorData
-        try {
-          errorData = JSON.parse(errorText)
-        } catch {
-          errorData = { error: errorText || `HTTP ${res.status}` }
-        }
-        alert(`❌ Ошибка сохранения: ${errorData.error || 'Неизвестная ошибка'}`)
+        const err = await res.json().catch(() => ({}))
+        alert(`❌ Ошибка: ${err.error || 'Не удалось сохранить'}`)
       }
     } catch (err) {
-      console.error('[ADMIN PAGE] Save error:', err)
-      alert(`❌ Ошибка: ${err instanceof Error ? err.message : 'Неизвестная ошибка'}`)
+      alert(`❌ ${err instanceof Error ? err.message : 'Ошибка сети'}`)
     } finally {
       setLoading(false)
     }
   }
 
-  if (!cfg) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500">Загрузка...</div>
-      </div>
-    )
-  }
-
-  const filterKeys = Object.keys(cfg.config)
+  const filterKeys = cfg ? Object.keys(cfg.config) : []
 
   return (
     <div className="space-y-6">
@@ -184,147 +195,178 @@ export default function CatalogFiltersEditorPage() {
         title="Фильтры каталога"
         backHref="/admin/catalog"
         actions={
-          <button
-            onClick={save}
-            disabled={loading}
-            className="px-4 py-2 bg-gray-900 text-white rounded hover:bg-gray-800 disabled:opacity-50"
-          >
-            {loading ? 'Сохранение...' : 'Сохранить'}
-          </button>
+          selected && (
+            <button
+              onClick={save}
+              disabled={loading}
+              className="px-4 py-2 bg-gray-900 text-white rounded hover:bg-gray-800 disabled:opacity-50"
+            >
+              {loading ? 'Сохранение...' : 'Сохранить'}
+            </button>
+          )
         }
       />
 
-      <div className="bg-blue-50 border border-blue-200 rounded p-4">
-        <p className="text-sm text-blue-800">
-          <strong>Инструкция:</strong> Настройте фильтры для каталога проектов. Измените заголовки, диапазоны значений и опции по необходимости.
-        </p>
-      </div>
+      <p className="text-gray-600 text-sm">
+        Выберите раздел или подраздел — откроются фильтры для этого раздела. У каждого раздела и подраздела свои фильтры.
+      </p>
 
-      <div className="space-y-6">
-        {/* Добавление нового фильтра */}
-        <div className="bg-white border rounded-lg p-6 shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Ключ</label>
-              <input className="w-full border rounded px-3 py-2" placeholder="например: material" value={newKey} onChange={(e)=>setNewKey(e.target.value)} />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Название</label>
-              <input className="w-full border rounded px-3 py-2" placeholder="Отображаемое имя" value={newTitle} onChange={(e)=>setNewTitle(e.target.value)} />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Тип</label>
-              <select className="w-full border rounded px-3 py-2" value={newType} onChange={(e)=>setNewType(e.target.value as any)}>
-                <option value="checkboxes">Мультивыбор</option>
-                <option value="radio">Один вариант</option>
-                <option value="range">Диапазон</option>
-              </select>
-            </div>
-            <div>
-              <button onClick={addFilterSection} className="w-full px-4 py-2 bg-gray-900 text-white rounded hover:bg-gray-800">Добавить фильтр</button>
-            </div>
-          </div>
-        </div>
-        {filterKeys.map((key) => {
-          const filter = cfg.config[key as keyof FiltersConfig]
-          if (!filter) return null
-
-          return (
-            <div key={key} className="bg-white border rounded-lg p-6 shadow-sm">
-              <div className="flex justify-between items-center mb-4">
-                <div className="font-semibold text-gray-900">{key}</div>
-                <button onClick={() => removeFilterSection(key)} className="text-red-600 border border-red-200 rounded px-3 py-1 text-sm hover:bg-red-50">Удалить фильтр</button>
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Название фильтра
-                </label>
-            <input 
-                  type="text"
-                  className="w-full border rounded px-3 py-2"
-                  value={filter.title || ''}
-                  onChange={(e) => updateFilter(key as keyof FiltersConfig, { title: e.target.value })}
-                  placeholder="Название фильтра"
-                />
-          </div>
-
-              {filter.type === 'range' ? (
-                <div className="grid grid-cols-3 gap-4">
-              <div>
-                    <label className="block text-sm text-gray-600 mb-1">Минимум</label>
-                <input 
-                      type="number"
-                  className="w-full border rounded px-3 py-2" 
-                      value={filter.min ?? ''}
-                      onChange={(e) => updateFilter(key as keyof FiltersConfig, { min: e.target.value ? Number(e.target.value) : undefined })}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-gray-600 mb-1">Максимум</label>
-                    <input
-                  type="number" 
-                      className="w-full border rounded px-3 py-2"
-                      value={filter.max ?? ''}
-                      onChange={(e) => updateFilter(key as keyof FiltersConfig, { max: e.target.value ? Number(e.target.value) : undefined })}
-                />
-              </div>
-              <div>
-                    <label className="block text-sm text-gray-600 mb-1">Шаг</label>
-                <input 
-                      type="number"
-                  className="w-full border rounded px-3 py-2" 
-                      value={filter.step ?? ''}
-                      onChange={(e) => updateFilter(key as keyof FiltersConfig, { step: e.target.value ? Number(e.target.value) : undefined })}
-                />
-              </div>
-            </div>
-          ) : (
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-gray-700">Опции:</label>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Дерево разделов */}
+        <div className="bg-white border rounded-xl p-4 space-y-2 max-h-[600px] overflow-y-auto">
+          <h3 className="font-semibold text-gray-900 mb-3">Разделы и подразделы</h3>
+          <button
+            onClick={selectGlobal}
+            className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition mb-2 ${
+              selected?.type === 'global' ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'hover:bg-gray-100 border border-transparent'
+            }`}
+          >
+            🌐 Глобальные (по умолчанию)
+          </button>
+          {sections.length === 0 && <p className="text-gray-500 text-sm">Нет разделов. Создайте их в «Настройка каталога».</p>}
+          {sections.map((s) => (
+            <div key={s.id} className="space-y-1">
+              <button
+                onClick={() => selectSection(s)}
+                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition ${
+                  selected?.type === 'section' && selected?.sectionId === s.id
+                    ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                    : 'hover:bg-gray-100 border border-transparent'
+                }`}
+              >
+                📁 {s.title}
+              </button>
+              <div className="pl-3 space-y-1">
+                {(s.subsections || []).map((sb) => (
+                  <div key={sb.id}>
                     <button
-                      onClick={() => addOption(key as keyof FiltersConfig)}
-                      className="px-3 py-1 text-sm border rounded hover:bg-gray-50"
+                      onClick={() => selectSubsection(s, sb)}
+                      className={`w-full text-left px-3 py-1.5 rounded text-sm transition ${
+                        selected?.type === 'subsection' && selected?.subsectionId === sb.id
+                          ? 'bg-amber-100 text-amber-900'
+                          : 'hover:bg-gray-50'
+                      }`}
                     >
-                      + Добавить опцию
+                      📂 {sb.title}
                     </button>
+                    <div className="pl-3">
+                      {((sb as any).subsubsections || []).map((ss: { id: string; title: string }) => (
+                        <button
+                          key={ss.id}
+                          onClick={() => selectSubsubsection(s, sb, ss)}
+                          className={`w-full text-left px-2 py-1 rounded text-xs transition ${
+                            selected?.type === 'subsubsection' && selected?.subsubsectionId === ss.id
+                              ? 'bg-amber-100 text-amber-900'
+                              : 'hover:bg-gray-50'
+                          }`}
+                        >
+                          📄 {ss.title}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-            <div className="space-y-2">
-                    {(filter.options || []).map((option, index) => (
-                      <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-3 items-center p-3 bg-gray-50 rounded">
-                  <input 
-                          type="text"
-                          className="border rounded px-3 py-2"
-                          placeholder="Отображаемый текст"
-                          value={option.label || ''}
-                          onChange={(e) => updateOption(key as keyof FiltersConfig, index, 'label', e.target.value)}
-                  />
-                  <input 
-                          type={typeof option.value === 'number' ? 'number' : 'text'}
-                          className="border rounded px-3 py-2"
-                          placeholder="Значение для фильтрации"
-                          value={option.value ?? ''}
-                          onChange={(e) => {
-                            const value = typeof option.value === 'number'
-                              ? Number(e.target.value)
-                              : e.target.value
-                            updateOption(key as keyof FiltersConfig, index, 'value', value)
-                          }}
-                  />
-                  <button 
-                          onClick={() => removeOption(key as keyof FiltersConfig, index)}
-                    className="px-3 py-2 text-red-600 border border-red-200 rounded hover:bg-red-50 text-sm"
-                  >
-                    Удалить
-                  </button>
-                </div>
-              ))}
-                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Редактор фильтров */}
+        <div className="lg:col-span-2 space-y-4">
+          {!selected && (
+            <div className="bg-gray-50 border rounded-xl p-8 text-center text-gray-500">
+              Выберите раздел или подраздел слева, чтобы настроить фильтры
             </div>
           )}
+          {selected && loadingFilters && (
+            <div className="flex justify-center py-12">
+              <div className="w-8 h-8 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+            </div>
+          )}
+          {selected && !loadingFilters && cfg && (
+            <>
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                <span className="font-medium text-amber-900">Фильтры для: {selected.title}</span>
+              </div>
+
+              {/* Добавить фильтр */}
+              <div className="bg-white border rounded-lg p-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Ключ</label>
+                    <input className="w-full border rounded px-3 py-2 text-sm" placeholder="например: material" value={newKey} onChange={(e) => setNewKey(e.target.value)} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Название</label>
+                    <input className="w-full border rounded px-3 py-2 text-sm" placeholder="Отображаемое имя" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Тип</label>
+                    <select className="w-full border rounded px-3 py-2 text-sm" value={newType} onChange={(e) => setNewType(e.target.value as any)}>
+                      <option value="checkboxes">Мультивыбор</option>
+                      <option value="radio">Один вариант</option>
+                      <option value="range">Диапазон</option>
+                    </select>
+                  </div>
+                  <div>
+                    <button onClick={addFilterSection} className="w-full px-4 py-2 bg-gray-900 text-white rounded hover:bg-gray-800 text-sm">Добавить фильтр</button>
+                  </div>
+                </div>
+              </div>
+
+              {filterKeys.map((key) => {
+                const filter = cfg.config[key]
+                if (!filter) return null
+                return (
+                  <div key={key} className="bg-white border rounded-lg p-4">
+                    <div className="flex justify-between items-center mb-3">
+                      <span className="font-medium text-gray-900">{key}</span>
+                      <button onClick={() => removeFilterSection(key)} className="text-red-600 border border-red-200 rounded px-2 py-1 text-sm hover:bg-red-50">Удалить</button>
+                    </div>
+                    <div className="mb-3">
+                      <label className="block text-sm text-gray-600 mb-1">Название</label>
+                      <input
+                        className="w-full border rounded px-3 py-2 text-sm"
+                        value={filter.title || ''}
+                        onChange={(e) => updateFilter(key, { title: e.target.value })}
+                      />
+                    </div>
+                    {filter.type === 'range' ? (
+                      <div className="grid grid-cols-3 gap-3">
+                        <div>
+                          <label className="block text-xs text-gray-600 mb-1">Мин</label>
+                          <input type="number" className="w-full border rounded px-2 py-1.5 text-sm" value={filter.min ?? ''} onChange={(e) => updateFilter(key, { min: e.target.value ? Number(e.target.value) : undefined })} />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-600 mb-1">Макс</label>
+                          <input type="number" className="w-full border rounded px-2 py-1.5 text-sm" value={filter.max ?? ''} onChange={(e) => updateFilter(key, { max: e.target.value ? Number(e.target.value) : undefined })} />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-600 mb-1">Шаг</label>
+                          <input type="number" className="w-full border rounded px-2 py-1.5 text-sm" value={filter.step ?? ''} onChange={(e) => updateFilter(key, { step: e.target.value ? Number(e.target.value) : undefined })} />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <label className="text-sm text-gray-600">Опции</label>
+                          <button onClick={() => addOption(key)} className="px-2 py-1 text-xs border rounded hover:bg-gray-50">+ Добавить</button>
+                        </div>
+                        {(filter.options || []).map((opt, idx) => (
+                          <div key={idx} className="flex gap-2 items-center">
+                            <input className="flex-1 border rounded px-2 py-1.5 text-sm" placeholder="Текст" value={opt.label || ''} onChange={(e) => updateOption(key, idx, 'label', e.target.value)} />
+                            <input className="flex-1 border rounded px-2 py-1.5 text-sm" placeholder="Значение" value={opt.value ?? ''} onChange={(e) => updateOption(key, idx, 'value', typeof opt.value === 'number' ? Number(e.target.value) : e.target.value)} />
+                            <button onClick={() => removeOption(key, idx)} className="text-red-600 text-sm hover:underline">Удалить</button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </>
+          )}
         </div>
-          )
-        })}
       </div>
     </div>
   )

@@ -14,7 +14,7 @@ export default function AdminHomePage() {
 
         <Link href="/admin/changes" className="block p-6 rounded-xl border border-gray-200 bg-white hover:shadow-lg transition">
           <h2 className="text-xl font-semibold mb-2">Изменения на сайте</h2>
-          <p className="text-gray-600">Управляйте популярными проектами, калькулятором, отзывами и FAQ.</p>
+          <p className="text-gray-600">Хедер, Hero, калькулятор, отзывы, FAQ, футер, SEO.</p>
         </Link>
 
         <Link href="/admin/clients" className="block p-6 rounded-xl border border-gray-200 bg-white hover:shadow-lg transition">

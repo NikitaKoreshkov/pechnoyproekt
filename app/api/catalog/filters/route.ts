@@ -21,10 +21,10 @@ const defaultFiltersConfig = {
     step: 10
   },
   material: {
-    title: 'Тип трубы',
+    title: 'Тип',
     type: 'checkboxes',
     options: [
-      { label: 'ПНД (ПЭ)', value: 'ПНД' },
+      { label: 'Стандарт', value: 'стандарт' },
       { label: 'ПВХ', value: 'ПВХ' },
       { label: 'Металлопластик', value: 'металлопластик' }
     ]
@@ -49,19 +49,32 @@ const defaultFiltersConfig = {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    let cfg = await prisma.catalogFiltersConfig.findFirst()
+    const { searchParams } = new URL(request.url)
+    const subsectionId = searchParams.get('subsectionId')
+    const sectionId = searchParams.get('sectionId')
+
+    let cfg = null
+    if (subsectionId) {
+      cfg = await prisma.catalogFiltersConfig.findFirst({ where: { subsectionId } })
+    }
+    if (!cfg && sectionId) {
+      cfg = await prisma.catalogFiltersConfig.findFirst({ where: { sectionId } })
+    }
+    if (!cfg) {
+      cfg = await prisma.catalogFiltersConfig.findFirst({
+        where: { sectionId: null, subsectionId: null }
+      })
+    }
+    if (!cfg) {
+      cfg = await prisma.catalogFiltersConfig.findFirst()
+    }
     if (!cfg) {
       cfg = await prisma.catalogFiltersConfig.create({ data: { config: {} } })
     }
     const { blocks, layout, ...clean } = (cfg.config || {}) as any
     
-    console.log('[PUBLIC FILTERS GET] Config keys:', Object.keys(clean))
-    console.log('[PUBLIC FILTERS GET] Config:', JSON.stringify(clean, null, 2))
-    
-    // Всегда возвращаем данные из БД, даже если они пустые
-    // Если БД пустая - вернем пустой объект, а не дефолты
     return NextResponse.json(clean || {}, {
       headers: {
         'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',

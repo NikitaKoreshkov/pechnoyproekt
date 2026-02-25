@@ -255,28 +255,19 @@ export default function RegisterPage() {
   return (
     <>
       <Header />
-      <div className="min-h-screen pt-16 relative overflow-hidden bg-gradient-to-br from-[#E8F0F8] via-[#D4E4F0] to-[#E8F0F8]">
-        {/* Animated background elements */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-[#4A6FA5] rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-[#1E3A5F] rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        </div>
-
+      <div className="min-h-screen pt-16 relative overflow-hidden bg-gradient-to-b from-[#FAF7F2] via-[#F5F0E8] to-[#EDE8E0]">
         <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
           <div className="w-full max-w-md">
-            {/* Glass Card */}
-            <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/30 shadow-2xl overflow-hidden">
-              {/* Shimmer effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 animate-shimmer"></div>
-              
-              <div className="relative p-8 space-y-5">
+            <div className="bg-white rounded-2xl border border-[#E8E2D9] shadow-[0_25px_50px_-12px_rgba(26,15,10,0.15)] overflow-hidden">
+              <div className="relative p-8 md:p-10 space-y-5">
                 <div className="text-center mb-8">
-                  <h1 className="text-4xl font-black text-gray-900 mb-2 font-inter">Создать аккаунт</h1>
-                  <p className="text-gray-600">Начните работу с «АкваГазТех»</p>
+                  <p className="text-xs uppercase tracking-[0.3em] text-[#5C3825] mb-4 font-medium">Регистрация</p>
+                  <h1 className="text-4xl font-bold text-[#1A1210] mb-2 font-lora">Создать аккаунт</h1>
+                  <p className="text-[#5C3825]/90">Начните работу</p>
                 </div>
 
                 {error && (
-                  <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-600 text-sm animate-shake">
+                  <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-600 text-sm">
                     {error}
                   </div>
                 )}
@@ -287,13 +278,13 @@ export default function RegisterPage() {
                       Имя
                     </label>
                     <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[#1E3A5F] transition-colors" />
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#5C3825]/60 group-focus-within:text-[#1A0F0A] transition-colors" />
                       <input
                         type="text"
                         required
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className="w-full pl-11 pr-4 py-3 rounded-xl bg-white/50 backdrop-blur-sm border-2 border-gray-200 focus:border-[#1E3A5F] focus:outline-none focus:ring-2 focus:ring-[#1E3A5F]/20 transition-all"
+                        className="w-full pl-11 pr-4 py-3 rounded-xl bg-[#FAF7F2] border border-[#E8E2D9] focus:border-[#1A0F0A] focus:outline-none focus:ring-2 focus:ring-[#1A0F0A]/20 transition-all"
                         placeholder="Ваше имя"
                       />
                     </div>
@@ -304,13 +295,13 @@ export default function RegisterPage() {
                       Email
                     </label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[#1E3A5F] transition-colors" />
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#5C3825]/60 group-focus-within:text-[#1A0F0A] transition-colors" />
                       <input
                         type="email"
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full pl-11 pr-4 py-3 rounded-xl bg-white/50 backdrop-blur-sm border-2 border-gray-200 focus:border-[#1E3A5F] focus:outline-none focus:ring-2 focus:ring-[#1E3A5F]/20 transition-all"
+                        className="w-full pl-11 pr-4 py-3 rounded-xl bg-[#FAF7F2] border border-[#E8E2D9] focus:border-[#1A0F0A] focus:outline-none focus:ring-2 focus:ring-[#1A0F0A]/20 transition-all"
                         placeholder="your@email.com"
                       />
                     </div>
@@ -321,13 +312,13 @@ export default function RegisterPage() {
                       Пароль
                     </label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[#1E3A5F] transition-colors" />
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#5C3825]/60 group-focus-within:text-[#1A0F0A] transition-colors" />
                       <input
                         type={showPassword ? 'text' : 'password'}
                         required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="w-full pl-11 pr-12 py-3 rounded-xl bg-white/50 backdrop-blur-sm border-2 border-gray-200 focus:border-[#1E3A5F] focus:outline-none focus:ring-2 focus:ring-[#1E3A5F]/20 transition-all"
+                        className="w-full pl-11 pr-12 py-3 rounded-xl bg-[#FAF7F2] border border-[#E8E2D9] focus:border-[#1A0F0A] focus:outline-none focus:ring-2 focus:ring-[#1A0F0A]/20 transition-all"
                         placeholder="••••••••"
                       />
                       <button
@@ -345,13 +336,13 @@ export default function RegisterPage() {
                       Подтвердите пароль
                     </label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[#1E3A5F] transition-colors" />
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#5C3825]/60 group-focus-within:text-[#1A0F0A] transition-colors" />
                       <input
                         type={showConfirmPassword ? 'text' : 'password'}
                         required
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="w-full pl-11 pr-12 py-3 rounded-xl bg-white/50 backdrop-blur-sm border-2 border-gray-200 focus:border-[#1E3A5F] focus:outline-none focus:ring-2 focus:ring-[#1E3A5F]/20 transition-all"
+                        className="w-full pl-11 pr-12 py-3 rounded-xl bg-[#FAF7F2] border border-[#E8E2D9] focus:border-[#1A0F0A] focus:outline-none focus:ring-2 focus:ring-[#1A0F0A]/20 transition-all"
                         placeholder="••••••••"
                       />
                       <button
@@ -367,7 +358,7 @@ export default function RegisterPage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-3.5 bg-[#1E3A5F] text-white font-bold rounded-xl text-base hover:bg-[#2C5282] transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-[#1E3A5F]/30"
+                    className="w-full py-3.5 bg-[#1A0F0A] text-white font-bold rounded-xl text-base hover:bg-[#2C1810] transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-[0_4px_20px_-4px_rgba(26,15,10,0.3)]"
                   >
                     {loading ? (
                       <>
@@ -380,9 +371,9 @@ export default function RegisterPage() {
                   </button>
                 </form>
 
-                <div className="text-center text-sm text-gray-600 mt-6">
+                <div className="text-center text-sm text-[#5C3825]/90 mt-6">
                   Уже есть аккаунт?{' '}
-                  <a href="/auth/signin" className="font-semibold text-[#1E3A5F] hover:text-[#2C5282] underline underline-offset-2 transition-colors">
+                  <a href="/auth/signin" className="font-semibold text-[#1A0F0A] hover:text-[#2C1810] underline underline-offset-2 transition-colors">
                     Войти
                   </a>
                 </div>
@@ -392,15 +383,6 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      <style jsx>{`
-        @keyframes shimmer {
-          0% { transform: translateX(-100%) skewX(-12deg); }
-          100% { transform: translateX(200%) skewX(-12deg); }
-        }
-        .animate-shimmer {
-          animation: shimmer 3s infinite;
-        }
-      `}</style>
     </>
   )
 }

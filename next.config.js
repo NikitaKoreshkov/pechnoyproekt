@@ -9,6 +9,8 @@ const nextConfig = {
     return [
       // Раздача загрузок через API из public/uploads (та же папка, куда пишет upload)
       { source: '/uploads/:path*', destination: '/api/uploads/:path*' },
+      // Раздача изображений из парсера
+      { source: '/parser/:path*', destination: '/api/parser/:path*' },
     ]
   },
   images: {
@@ -18,7 +20,10 @@ const nextConfig = {
     minimumCacheTTL: 60,
     dangerouslyAllowSVG: false,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    remotePatterns: [],
+    remotePatterns: [
+      { protocol: 'https', hostname: 'img.youtube.com', pathname: '/vi/**' },
+      { protocol: 'https', hostname: 'i.ytimg.com', pathname: '/vi/**' },
+    ],
     unoptimized: true, // Отключена оптимизация для динамически загружаемых изображений
   },
   compress: true,

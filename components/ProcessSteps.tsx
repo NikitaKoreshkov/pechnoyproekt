@@ -10,7 +10,7 @@ interface Advantage {
 
 export default function ProcessSteps() {
   const [isVisible, setIsVisible] = useState(false)
-  const [title, setTitle] = useState('«АкваГазТех» ваш надежный партнер')
+  const [title, setTitle] = useState('Ваш надёжный партнёр')
   const [mainMission, setMainMission] = useState('')
   const [specialization, setSpecialization] = useState('')
   const [advantages, setAdvantages] = useState<Advantage[]>([])
@@ -20,10 +20,10 @@ export default function ProcessSteps() {
   useEffect(() => {
     const loadConfig = async () => {
       try {
-        const res = await fetch('/api/admin/process-steps', { cache: 'no-store' })
+        const res = await fetch('/api/process-steps', { cache: 'no-store' })
         if (res.ok) {
           const data = await res.json()
-          setTitle(data.title || '«АкваГазТех» ваш надежный партнер')
+          setTitle(data.title || 'Ваш надёжный партнёр')
           setMainMission(data.mainMission || '')
           setSpecialization(data.specialization || '')
           setAdvantages(data.advantages || [])
@@ -94,7 +94,7 @@ export default function ProcessSteps() {
             <h3 className={`text-3xl font-bold text-gray-900 mb-12 text-center transition-all duration-500 ${
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'
             }`} style={{ transitionDelay: '300ms' }}>
-              Почему труба ПНД — лидер современных коммуникаций?
+              Почему выбирают нас
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

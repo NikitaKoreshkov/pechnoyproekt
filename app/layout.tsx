@@ -1,9 +1,12 @@
 import type { Metadata } from 'next'
 import { Inter, Lora } from 'next/font/google'
 import './globals.css'
+import dynamicImport from 'next/dynamic'
 import Providers from '@/components/providers/SessionProvider'
 import { FavoritesCompareProvider } from '@/components/providers/FavoritesCompareProvider'
 import MetadataTags from '@/components/MetadataTags'
+
+const AIAssistant = dynamicImport(() => import('@/components/AIAssistant'), { ssr: false })
 import { generateSiteMetadata, getSiteMetadata } from '@/lib/metadata'
 
 // Отключаем кеширование для динамических метаданных
@@ -26,14 +29,23 @@ export async function generateMetadata(): Promise<Metadata> {
   return generateSiteMetadata()
 }
 
+const defaultCompanyName = 'Печнойпроект'
+
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const metadata = await getSiteMetadata()
-  const baseUrl = 'https://aquagazteh.ru'
-  const companyName = metadata.companyName
+  let companyName = defaultCompanyName
+  let ogImage = '/images/1.png'
+  try {
+    const metadata = await getSiteMetadata()
+    companyName = metadata.companyName
+    ogImage = metadata.ogImage
+  } catch (_) {
+    // используем дефолты при любой ошибке (БД, Prisma и т.д.)
+  }
+  const baseUrl = 'https://xn--e1aalfmgbdekz5c.xn--p1ai'
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -51,37 +63,32 @@ export default async function RootLayout({
         },
         contactPoint: {
           '@type': 'ContactPoint',
-          telephone: '+7-495-023-82-15',
+          telephone: '+7-952-131-52-82',
           contactType: 'customer service',
           areaServed: 'RU',
           availableLanguage: 'Russian'
         },
         address: {
           '@type': 'PostalAddress',
-          streetAddress: 'Всеволожский р-н, г. Колтуши, ул. Мира, д. 9, кв. 222',
-          addressLocality: 'Колтуши',
-          addressRegion: 'Ленинградская область',
-          postalCode: '188680',
+          addressLocality: 'Санкт-Петербург',
           addressCountry: 'RU'
         },
         sameAs: [
-          'https://facebook.com/аквагазтех',
-          'https://instagram.com/аквагазтех'
+          'https://www.youtube.com/channel/UCwthYpA8PPvh6DLqUKKaG1w',
+          'https://t.me/proektmangal96',
+          'https://vk.com/public45498931'
         ]
       },
       {
         '@type': 'LocalBusiness',
         '@id': `${baseUrl}/#localbusiness`,
-        name: `${companyName} - Поставка труб ПНД и комплектующих`,
-        image: `${baseUrl}${metadata.ogImage}`,
-        telephone: '+7-931-302-30-08',
-        email: 'agtspb@inbox.ru',
+        name: `${companyName} - Печи, камины, барбекю`,
+        image: `${baseUrl}${ogImage}`,
+        telephone: '+7-952-131-52-82',
+        email: '89521315282@mail.ru',
         address: {
           '@type': 'PostalAddress',
-          streetAddress: 'Всеволожский р-н, г. Колтуши, ул. Мира, д. 9, кв. 222',
-          addressLocality: 'Колтуши',
-          addressRegion: 'Ленинградская область',
-          postalCode: '188680',
+          addressLocality: 'Санкт-Петербург',
           addressCountry: 'RU'
         },
         geo: {
@@ -148,7 +155,10 @@ export default async function RootLayout({
       </head>
       <body className="font-inter">
         <Providers>
-          <FavoritesCompareProvider>{children}</FavoritesCompareProvider>
+          <FavoritesCompareProvider>
+            {children}
+            <AIAssistant />
+          </FavoritesCompareProvider>
         </Providers>
       </body>
     </html>

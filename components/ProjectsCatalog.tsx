@@ -33,7 +33,16 @@ export default function ProjectsCatalog() {
   const [projects, setProjects] = useState<Project[]>([])
   const [isVisible, setIsVisible] = useState(false)
   const [visibleProjects, setVisibleProjects] = useState(6)
+  const [isMobile, setIsMobile] = useState(false)
   const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)')
+    setIsMobile(mq.matches)
+    const h = () => setIsMobile(mq.matches)
+    mq.addEventListener('change', h)
+    return () => mq.removeEventListener('change', h)
+  }, [])
   const { favorites, addFavorite, removeFavorite } = useFavoritesCompare();
 
   useEffect(() => {
@@ -232,14 +241,16 @@ export default function ProjectsCatalog() {
   }
 
   return (
-    <section id="projects-catalog" className="py-20 bg-gray-50">
+    <section id="projects-catalog" className="py-24 bg-gradient-to-b from-[#FAF7F2] via-[#F5F0E8] to-[#FAF7F2]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Заголовок */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-20">
+          <p className="text-sm uppercase tracking-[0.3em] text-[#5C3825] mb-4 font-medium">Каталог</p>
+          <h2 className="text-4xl md:text-5xl font-bold text-[#1A1210] mb-6 font-lora tracking-tight">
             Популярные товары
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <div className="w-24 h-px bg-gradient-to-r from-transparent via-[#1A0F0A]/30 to-transparent mx-auto mb-6"></div>
+          <p className="text-lg text-[#5C3825]/90 max-w-2xl mx-auto leading-relaxed">
             Проверенные и готовые решения для любых задач
           </p>
         </div>
@@ -247,12 +258,12 @@ export default function ProjectsCatalog() {
         {/* Сетка товаров */}
         {loading ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5D4E37] mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A2C1A] mx-auto mb-4"></div>
             <p className="text-gray-600">Загрузка товаров...</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {projects.slice(0, visibleProjects).map((project, index) => (
+            {projects.slice(0, isMobile ? 3 : visibleProjects).map((project, index) => (
             <div
               key={project._key ?? project.id}
               className={`transition-all duration-500 ${
@@ -262,8 +273,8 @@ export default function ProjectsCatalog() {
               }`}
               style={{ transitionDelay: `${index * 80}ms` }}
             >
-              {/* Обертка для популярных проектов с закруглением и границей */}
-              <div className="rounded-xl border-2 border-gray-200 overflow-hidden bg-transparent hover:border-gray-300 transition-all duration-200">
+              {/* Премиум обертка карточки */}
+              <div className="rounded-xl overflow-hidden bg-white border border-[#E8E2D9] hover:border-white/50 transition-all duration-300 shadow-[0_4px_24px_-4px_rgba(26,15,10,0.08)] hover:shadow-[0_20px_40px_-12px_rgba(26,15,10,0.15)] group">
                 <ProjectCard
                   {...project}
                   id={project.slug || project.id}
@@ -284,7 +295,7 @@ export default function ProjectsCatalog() {
             <button
               type="button"
               onClick={() => window.dispatchEvent(new CustomEvent('open-catalog-overlay'))}
-              className="inline-flex items-center px-6 py-3 bg-white border-2 border-[#1E3A5F] text-[#1E3A5F] hover:bg-[#1E3A5F] hover:text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="inline-flex items-center px-8 py-4 bg-[#1A0F0A] text-white border border-white/40 hover:border-white font-semibold rounded-xl transition-all duration-300 shadow-[0_4px_20px_-4px_rgba(26,15,10,0.3)] hover:shadow-[0_8px_30px_-4px_rgba(26,15,10,0.4)] tracking-widest uppercase text-sm"
             >
               <span>Посмотреть весь каталог</span>
               <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

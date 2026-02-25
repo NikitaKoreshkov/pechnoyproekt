@@ -165,7 +165,7 @@ export default function ProcessStepsEditorPage() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5D4E37]"
-              placeholder="«АкваГазТех» ваш надежный партнер"
+              placeholder="Ваш надёжный партнёр"
             />
           </div>
         </div>
@@ -182,7 +182,7 @@ export default function ProcessStepsEditorPage() {
               onChange={(e) => setMainMission(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5D4E37]"
               rows={3}
-              placeholder="Основная миссия компании «АкваГазТех» — обеспечить ваши задачи качественными материалами для современных инженерных систем."
+              placeholder="Основная миссия компании — обеспечить ваши задачи качественными решениями."
             />
           </div>
         </div>
@@ -199,14 +199,14 @@ export default function ProcessStepsEditorPage() {
               onChange={(e) => setSpecialization(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5D4E37]"
               rows={4}
-              placeholder="Мы специализируемся на поставках труб ПНД (ПЭ) и полного спектра комплектующих для строительства наружных и внутренних сетей любой сложности."
+              placeholder="Мы специализируемся на поставках качественной продукции и услуг."
             />
           </div>
         </div>
 
         {/* Преимущества */}
         <div className="bg-white rounded-xl p-6 border border-gray-200">
-          <h2 className="text-xl font-semibold mb-4">Почему труба ПНД — лидер современных коммуникаций?</h2>
+          <h2 className="text-xl font-semibold mb-4">Почему выбирают нас</h2>
           <div className="space-y-4">
             {advantages.map((advantage, index) => (
               <div key={advantage.id} className="border border-gray-200 rounded-lg p-4">
@@ -259,7 +259,7 @@ export default function ProcessStepsEditorPage() {
               onChange={(e) => setConclusion(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5D4E37]"
               rows={4}
-              placeholder="Выбирая «АкваГазТех», вы выбираете надежность, проверенную временем и сотнями успешных проектов."
+              placeholder="Выбирая нас, вы выбираете надёжность, проверенную временем и успешными проектами."
             />
           </div>
         </div>

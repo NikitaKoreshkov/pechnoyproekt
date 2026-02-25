@@ -138,29 +138,33 @@ export default function FAQ() {
   }
 
   return (
-    <section id="faq" className="py-20 bg-gray-50">
+    <section id="faq" className="py-24 bg-gradient-to-b from-[#EDE8E0] via-[#F5F0E8] to-[#EDE8E0]">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Заголовок */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          <p className="text-sm uppercase tracking-[0.3em] text-[#5C3825] mb-4 font-medium">Помощь</p>
+          <h2 className="text-4xl md:text-5xl font-bold text-[#1A1210] mb-6 font-lora tracking-tight">
             Часто задаваемые вопросы
           </h2>
-          <p className="text-xl text-gray-600">
-            Ответы на самые популярные вопросы о трубах и материалах
+          <div className="w-24 h-px bg-gradient-to-r from-transparent via-[#1A0F0A]/30 to-transparent mx-auto mb-6"></div>
+          <p className="text-lg text-[#5C3825]/90">
+            Ответы на самые популярные вопросы о продукции и услугах
           </p>
         </div>
 
         {/* FAQ список */}
         {loading ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto" style={{ borderColor: '#1E3A5F' }}></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A2C1A] mx-auto"></div>
           </div>
         ) : (
           <div className="space-y-4">
-            {items.map((item: any, index: number) => (
+            {items
+              .slice(0, 5)
+              .map((item: any, index: number) => (
             <div
               key={item.id}
-              className={`bg-white rounded-xl shadow-lg transition-all duration-500 ${
+              className={`bg-white rounded-xl shadow-[0_4px_24px_-4px_rgba(26,15,10,0.08)] border border-[#E8E2D9] hover:border-white/30 transition-all duration-500 ${
                 isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
               style={{ transitionDelay: `${index * 50}ms` }}
@@ -170,11 +174,11 @@ export default function FAQ() {
                 className="w-full p-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors duration-200"
               >
                 <div className="flex items-center space-x-3">
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3 className="text-lg font-semibold text-[#1A1210] font-lora">
                     {item.question}
                   </h3>
                   {item.isPopular && (
-                    <span className="px-2 py-1 text-xs font-medium rounded-full" style={{ backgroundColor: '#E8F0F8', color: '#1E3A5F' }}>
+                    <span className="px-3 py-1 text-xs font-medium tracking-wide uppercase rounded-lg bg-white/80 text-[#5C3825] border border-[#E8E2D9]">
                       Популярный
                     </span>
                   )}
@@ -208,24 +212,31 @@ export default function FAQ() {
         )}
 
         {/* CTA */}
-        <div className="text-center mt-12">
-          <p className="text-gray-600 mb-6">
-            Не нашли ответ на свой вопрос?
+        <div className="text-center mt-12 space-y-4">
+          <p className="text-[#4A2C1A]/90">
+            Не нашли ответ? Более 100 вопросов — в AI-помощнике
           </p>
-          <a
-            href="#contacts"
-            className="inline-flex items-center px-6 py-3 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105"
-            style={{ 
-              backgroundColor: '#1E3A5F',
-              willChange: 'transform',
-              backfaceVisibility: 'hidden'
-            }}
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
-            Задать вопрос
-          </a>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent('open-ai-assistant'))}
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02] bg-[#1A0F0A] hover:bg-[#2C1810] tracking-widest uppercase text-sm shadow-[0_4px_20px_-4px_rgba(26,15,10,0.3)]"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+              Открыть AI-помощник
+            </button>
+            <a
+              href="#contacts"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-[#2C1810] text-[#2C1810] font-semibold rounded-xl transition-all duration-300 hover:bg-[#2C1810] hover:text-white tracking-widest uppercase text-sm"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              Задать вопрос
+            </a>
+          </div>
         </div>
       </div>
     </section>

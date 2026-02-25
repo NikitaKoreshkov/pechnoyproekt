@@ -12,28 +12,23 @@ export async function GET() {
       // Возвращаем дефолтные значения, если конфига нет
       return NextResponse.json({
         id: 'default',
-        houseTypes: [{ id: 'steel', name: 'Стальные трубы', basePrice: 250, image: '/images/pipe-steel.jpg' }, { id: 'plastic', name: 'Пластиковые трубы (ПВХ)', basePrice: 150, image: '/images/pipe-plastic.jpg' }, { id: 'metalplastic', name: 'Металлопластиковые трубы', basePrice: 200, image: '/images/pipe-metalplastic.jpg' }],
-        finishingOptions: [{ id: 'none', name: 'Без обработки', multiplier: 0 }, { id: 'galvanized', name: 'Оцинковка', multiplier: 0.15 }, { id: 'painted', name: 'Покраска', multiplier: 0.1 }, { id: 'insulated', name: 'Теплоизоляция', multiplier: 0.25 }],
-        additionalOptions: [{ id: 'delivery', name: 'Доставка', price: 5000 }, { id: 'installation', name: 'Монтаж', price: 15000 }, { id: 'cutting', name: 'Резка по размерам', price: 3000 }, { id: 'welding', name: 'Сварочные работы', price: 20000 }],
-        stepTexts: { step1Title: 'Выберите тип труб', step2Title: 'Укажите метраж и количество', step3Title: 'Выберите обработку/покрытие', step4Title: 'Дополнительные услуги' },
+        houseTypes: [{ id: 'basic', name: 'Базовый вариант', basePrice: 250, image: '/images/house.jpg' }, { id: 'standard', name: 'Стандарт', basePrice: 150, image: '/images/house.jpg' }, { id: 'premium', name: 'Премиум', basePrice: 200, image: '/images/house.jpg' }],
+        finishingOptions: [{ id: 'none', name: 'Без дополнений', multiplier: 0 }, { id: 'opt1', name: 'Опция 1', multiplier: 0.15 }, { id: 'opt2', name: 'Опция 2', multiplier: 0.1 }, { id: 'opt3', name: 'Опция 3', multiplier: 0.25 }],
+        additionalOptions: [{ id: 'delivery', name: 'Доставка', price: 5000 }, { id: 'installation', name: 'Монтаж', price: 15000 }, { id: 'extra', name: 'Доп. услуги', price: 3000 }],
+        stepTexts: { step1Title: 'Выберите вариант', step2Title: 'Укажите параметры', step3Title: 'Выберите дополнения', step4Title: 'Дополнительные услуги' },
         areaSettings: { minArea: 1, maxArea: 12, defaultArea: 6, minQuantity: 1, maxQuantity: 100, defaultQuantity: 1 },
         formula: 'basePrice = house.basePrice * area; basePrice += finishingSum; basePrice += optionsSum; return Math.round(basePrice);',
-        whatsappTemplate: `🔧 РАСЧЁТ СТОИМОСТИ ТРУБ
+        whatsappTemplate: `📋 Расчёт стоимости
 
-📋 Параметры:
-• Тип труб: {{houseType}}
-• Метраж: {{area}} м
+• Вариант: {{houseType}}
+• Параметры: {{area}}
 
-🎨 Обработка/покрытие:
-{{finishing}}
+Дополнения: {{finishing}}
+Услуги: {{options}}
 
-✨ Дополнительные услуги:
-{{options}}
+💰 Стоимость: {{price}}
 
-💰 Предварительная стоимость:
-{{price}}
-
-📞 Свяжитесь со мной для получения точного расчёта и консультации!`,
+Свяжитесь со мной для уточнения!`,
         estimateTemplate: ''
       }, {
         headers: {
@@ -49,7 +44,7 @@ export async function GET() {
       houseTypes: cfg.houseTypes as any,
       finishingOptions: cfg.finishingOptions as any,
       additionalOptions: cfg.additionalOptions as any,
-      stepTexts: (cfg.stepTexts as any) || { step1Title: 'Выберите тип труб', step2Title: 'Укажите метраж и количество', step3Title: 'Выберите обработку/покрытие', step4Title: 'Дополнительные услуги' },
+      stepTexts: (cfg.stepTexts as any) || { step1Title: 'Выберите вариант', step2Title: 'Укажите параметры', step3Title: 'Выберите дополнения', step4Title: 'Дополнительные услуги' },
       areaSettings: (cfg.areaSettings as any) || { minArea: 20, maxArea: 120, defaultArea: 50 },
       formula: cfg.formula,
       whatsappTemplate: cfg.whatsappTemplate || '',
@@ -64,10 +59,10 @@ export async function GET() {
   } catch (error: any) {
     console.error('Error in GET /api/calculator:', error)
     return NextResponse.json({
-      houseTypes: [{ id: 'steel', name: 'Стальные трубы', basePrice: 250, image: '/images/pipe-steel.jpg' }, { id: 'plastic', name: 'Пластиковые трубы (ПВХ)', basePrice: 150, image: '/images/pipe-plastic.jpg' }, { id: 'metalplastic', name: 'Металлопластиковые трубы', basePrice: 200, image: '/images/pipe-metalplastic.jpg' }],
-      finishingOptions: [{ id: 'none', name: 'Без обработки', multiplier: 0 }, { id: 'galvanized', name: 'Оцинковка', multiplier: 0.15 }, { id: 'painted', name: 'Покраска', multiplier: 0.1 }, { id: 'insulated', name: 'Теплоизоляция', multiplier: 0.25 }],
-      additionalOptions: [{ id: 'delivery', name: 'Доставка', price: 5000 }, { id: 'installation', name: 'Монтаж', price: 15000 }, { id: 'cutting', name: 'Резка по размерам', price: 3000 }, { id: 'welding', name: 'Сварочные работы', price: 20000 }],
-      stepTexts: { step1Title: 'Выберите тип труб', step2Title: 'Укажите метраж и количество', step3Title: 'Выберите обработку/покрытие', step4Title: 'Дополнительные услуги' },
+      houseTypes: [{ id: 'basic', name: 'Базовый вариант', basePrice: 250, image: '/images/house.jpg' }, { id: 'standard', name: 'Стандарт', basePrice: 150, image: '/images/house.jpg' }, { id: 'premium', name: 'Премиум', basePrice: 200, image: '/images/house.jpg' }],
+      finishingOptions: [{ id: 'none', name: 'Без дополнений', multiplier: 0 }, { id: 'opt1', name: 'Опция 1', multiplier: 0.15 }, { id: 'opt2', name: 'Опция 2', multiplier: 0.1 }, { id: 'opt3', name: 'Опция 3', multiplier: 0.25 }],
+      additionalOptions: [{ id: 'delivery', name: 'Доставка', price: 5000 }, { id: 'installation', name: 'Монтаж', price: 15000 }, { id: 'extra', name: 'Доп. услуги', price: 3000 }],
+      stepTexts: { step1Title: 'Выберите вариант', step2Title: 'Укажите параметры', step3Title: 'Выберите дополнения', step4Title: 'Дополнительные услуги' },
       areaSettings: { minArea: 20, maxArea: 120, defaultArea: 50 }
     })
   }

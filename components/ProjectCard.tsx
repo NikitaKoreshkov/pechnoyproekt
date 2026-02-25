@@ -94,8 +94,7 @@ export default function ProjectCard({
               {tags.map((tag, index) => (
                 <span
                   key={index}
-                  className="px-3 py-1.5 rounded-2xl text-xs font-medium border border-white bg-black/30 backdrop-blur-sm text-white"
-                  style={{ borderRadius: '1rem' }}
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium tracking-wide uppercase bg-[#1A0F0A]/80 backdrop-blur-sm text-[#EDE8E0] border border-white/30"
                 >
                   {tag}
                 </span>
@@ -107,7 +106,7 @@ export default function ProjectCard({
           {/* Иконка лайка */}
           <button
             onClick={handleLike}
-            className="absolute bottom-4 right-4 p-2 bg-white/90 backdrop-blur-sm rounded-full focus:outline-none focus:ring-2 focus:ring-black"
+            className="absolute bottom-4 right-4 p-2 bg-[#FAF7F2]/95 backdrop-blur-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-white border border-[#E8E2D9]"
             aria-label={isLikedState ? 'Убрать из избранного' : 'Добавить в избранное'}
           >
             <svg
@@ -128,23 +127,23 @@ export default function ProjectCard({
 
         {/* Контент */}
         <div className="p-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-3">
+          <h3 className="text-xl font-bold text-[#1A1210] mb-3 font-lora">
             {title}
           </h3>
 
           {/* Характеристики */}
           <div className="space-y-2 mb-4">
-            <div className="flex justify-between text-sm text-gray-600">
+            <div className="flex justify-between text-sm text-[#5C3825]/80">
               <span>Диаметр:</span>
-              <span className="font-semibold">{area} мм</span>
+              <span className="font-semibold text-[#1A1210]">{area} м²</span>
             </div>
-            <div className="flex justify-between text-sm text-gray-600">
+            <div className="flex justify-between text-sm text-[#5C3825]/80">
               <span>Материал:</span>
-              <span className="font-semibold capitalize">{material}</span>
+              <span className="font-semibold text-[#1A1210] capitalize">{material}</span>
             </div>
-            <div className="flex justify-between text-sm text-gray-900">
-              <span className="font-bold">Цена</span>
-              <span className="font-bold text-base md:text-lg">
+            <div className="flex justify-between text-sm pt-2 border-t border-[#E8E2D9]">
+              <span className="font-bold text-[#1A1210]">Цена</span>
+              <span className="font-bold text-base md:text-lg text-[#1A0F0A]">
                 {priceTo ? `${formatPrice(priceFrom)} - ${formatPrice(priceTo)}` : `от ${formatPrice(priceFrom)}`}
               </span>
             </div>
