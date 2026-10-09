@@ -1,301 +1,112 @@
-# АкваГазТех - Сайт поставки труб ПНД и комплектующих
+# ПечнойПроект — сайт мастерской печных комплексов
 
-Полнофункциональный лендинг для компании, занимающейся поставкой качественных труб ПНД (ПЭ) и комплектующих для инженерных систем.
+**Каталог печей и каминов с конфигуратором, портфолио реализованных объектов, админкой и генерацией договоров в PDF.**
 
-## 🚀 Особенности
-
-- **Современный дизайн** с использованием Tailwind CSS
-- **Интерактивный калькулятор** стоимости труб и материалов
-- **Каталог проектов** с фильтрацией
-- **Адаптивная верстка** для всех устройств
-- **SEO оптимизация** с метаданными и структурированными данными
-- **Анимации и микровзаимодействия** для улучшения UX
-- **Формы обратной связи** с валидацией
-- **Интеграция с CRM** (готово к подключению)
-
-## 🛠 Технологии
-
-- **Next.js 14** - React фреймворк
-- **TypeScript** - типизация
-- **Tailwind CSS** - стилизация
-- **Framer Motion** - анимации (готово к подключению)
-- **Next/Image** - оптимизация изображений
-
-## 📦 Установка и запуск
-
-### Предварительные требования
-
-- **Node.js 18+** 
-- **npm** или **yarn**
-- **PostgreSQL** (база данных)
-- **Git**
-
-### Шаг 1: Установка зависимостей
-
-```bash
-# Перейдите в папку проекта
-cd site
-
-# Установите зависимости
-npm install
-```
-
-### Шаг 2: Настройка базы данных PostgreSQL
-
-1. **Установите PostgreSQL** (если ещё не установлен):
-   - Windows/Mac: [Скачать с официального сайта](https://www.postgresql.org/download/)
-   - Linux: `sudo apt-get install postgresql`
-
-2. **Создайте базу данных**:
-   ```bash
-   # Подключитесь к PostgreSQL
-   psql -U postgres
-   
-   # Создайте базу данных
-   CREATE DATABASE mydb;
-   
-   # Выйдите
-   \q
-   ```
-
-3. **Настройте переменные окружения**:
-   Создайте файл `.env` в корне проекта:
-   ```env
-   # База данных
-   DATABASE_URL="postgresql://postgres:password@localhost:5432/mydb?schema=public"
-   
-   # NextAuth (сгенерируйте свой секретный ключ)
-   NEXTAUTH_SECRET="your-secret-key-here-minimum-32-characters-long"
-   NEXTAUTH_URL="http://localhost:3000"
-   
-   # Email для отправки (опционально, для восстановления пароля)
-   SMTP_HOST="smtp.gmail.com"
-   SMTP_PORT="587"
-   SMTP_USER="your-email@gmail.com"
-   SMTP_PASSWORD="your-app-password"
-   ```
-
-   **Важно:** Замените:
-   - `postgres:password` на ваши данные для подключения к PostgreSQL
-   - `mydb` на имя вашей базы данных
-   - `your-secret-key-here...` на случайную строку (минимум 32 символа)
-   - Email настройки при необходимости
-
-### Шаг 3: Настройка базы данных (Prisma)
-
-```bash
-# Применить схему базы данных
-npm run db:push
-
-# Сгенерировать Prisma Client
-npm run db:generate
-
-# Заполнить базу начальными данными (создаст первого админа)
-npm run db:seed
-```
-
-**После выполнения seed будет создан первый администратор:**
-- Email: `a@gmail.com`
-- Пароль: `123` (рекомендуется сменить после первого входа)
-
-### Шаг 4: Запуск проекта
-
-```bash
-# Режим разработки
-npm run dev
-```
-
-Откройте [http://localhost:3000](http://localhost:3000) в браузере.
-
-### Шаг 5: Вход в админ-панель
-
-1. Перейдите на [http://localhost:3000/auth/signin](http://localhost:3000/auth/signin)
-2. Войдите под админом:
-   - **Email:** `a@gmail.com`
-   - **Пароль:** `123`
-3. После входа вы будете автоматически перенаправлены в админ-панель: [http://localhost:3000/admin](http://localhost:3000/admin)
-
-**⚠️ Важно:** После первого входа рекомендуется сменить пароль в разделе "Мой профиль" → "Сменить пароль"
-
-### Сборка для продакшена
-
-```bash
-# Сборка проекта
-npm run build
-
-# Запуск в продакшене
-npm start
-```
-
-**Для продакшена также нужно:**
-1. Настроить переменные окружения на сервере
-2. Использовать реальный `NEXTAUTH_SECRET`
-3. Настроить `NEXTAUTH_URL` на ваш домен
-4. Настроить подключение к базе данных на сервере
-
-## 📁 Структура проекта
-
-```
-site/
-├── app/                    # Next.js App Router
-│   ├── globals.css        # Глобальные стили
-│   ├── layout.tsx         # Основной layout с SEO
-│   └── page.tsx           # Главная страница
-├── components/            # React компоненты
-│   ├── Header.tsx         # Шапка сайта
-│   ├── Hero.tsx           # Главный баннер
-│   ├── ProjectsCatalog.tsx # Каталог товаров
-│   ├── Calculator.tsx     # Калькулятор стоимости
-│   ├── ProcessSteps.tsx   # Как мы работаем
-│   ├── Advantages.tsx     # Преимущества
-│   ├── ReviewsGallery.tsx # Отзывы и галерея
-│   ├── FAQ.tsx           # Часто задаваемые вопросы
-│   ├── ContactsCTA.tsx   # Контакты и форма
-│   ├── Footer.tsx        # Подвал сайта
-│   └── ProjectCard.tsx   # Карточка товара
-├── public/               # Статические файлы
-│   ├── images/          # Изображения
-│   ├── sitemap.xml      # Карта сайта
-│   └── robots.txt       # Robots.txt
-└── lib/                 # Утилиты
-    └── utils.ts         # Вспомогательные функции
-```
-
-## 🎨 Компоненты
-
-### Hero
-- Анимированный заголовок
-- CTA кнопки с плавными переходами
-- Параллакс эффект фона
-- Адаптивная типографика
-
-### Калькулятор
-- Многошаговая форма расчета стоимости труб
-- Валидация данных
-- Анимированные переходы
-- Интеграция с аналитикой
-
-### Каталог товаров
-- Сетка товаров с фильтрацией
-- Lazy loading изображений
-- Hover эффекты
-- Модальные окна
-
-### FAQ
-- Аккордеон интерфейс
-- Фильтрация по категориям
-- Плавные анимации
-- SEO оптимизация
-
-## 🔧 Настройка
-
-### Переменные окружения (полный список)
-
-Создайте файл `.env` в корне проекта:
-
-```env
-# Обязательные переменные
-DATABASE_URL="postgresql://postgres:password@localhost:5432/mydb?schema=public"
-NEXTAUTH_SECRET="your-secret-key-minimum-32-characters"
-NEXTAUTH_URL="http://localhost:3000"
-
-# Email настройки (для отправки писем, опционально)
-SMTP_HOST="smtp.gmail.com"
-SMTP_PORT="587"
-SMTP_USER="your-email@gmail.com"
-SMTP_PASSWORD="your-app-password"
-SMTP_FROM="your-email@gmail.com"
-
-# Публичные переменные (опционально)
-NEXT_PUBLIC_SITE_URL=https://aquagazteh.ru
-```
-
-**Как сгенерировать NEXTAUTH_SECRET:**
-```bash
-# В терминале (Linux/Mac)
-openssl rand -base64 32
-
-# Или онлайн: https://generate-secret.vercel.app/32
-```
-
-### Интеграция с CRM
-
-Для подключения к CRM (amoCRM, Bitrix24) обновите webhook URL в компонентах:
-
-```typescript
-// В Calculator.tsx и ContactsCTA.tsx
-const CRM_WEBHOOK_URL = process.env.CRM_WEBHOOK_URL
-```
-
-## 🚀 Деплой
-
-### Vercel (рекомендуется)
-
-1. Подключите репозиторий к Vercel
-2. Настройте переменные окружения
-3. Деплой автоматически при push в main
-
-### Netlify
-
-1. Подключите репозиторий к Netlify
-2. Настройте build команду: `npm run build`
-3. Настройте publish directory: `.next`
-
-### VPS
-
-```bash
-# Установка PM2
-npm install -g pm2
-
-# Сборка проекта
-npm run build
-
-# Запуск
-pm2 start npm --name "аквагазтех" -- start
-```
-
-## 📊 SEO и производительность
-
-- ✅ Метаданные для всех страниц
-- ✅ Структурированные данные (JSON-LD)
-- ✅ Open Graph и Twitter Cards
-- ✅ Sitemap.xml и robots.txt
-- ✅ Оптимизация изображений
-- ✅ Lazy loading
-- ✅ Минификация CSS/JS
-
-## 🔒 Безопасность
-
-- Валидация всех форм
-- Защита от XSS атак
-- HTTPS в продакшене
-- Безопасные заголовки
-
-## 📱 Поддержка браузеров
-
-- Chrome 90+
-- Firefox 88+
-- Safari 14+
-- Edge 90+
-
-## 🤝 Вклад в проект
-
-1. Форкните репозиторий
-2. Создайте ветку для фичи (`git checkout -b feature/amazing-feature`)
-3. Зафиксируйте изменения (`git commit -m 'Add amazing feature'`)
-4. Отправьте в ветку (`git push origin feature/amazing-feature`)
-5. Откройте Pull Request
-
-## 📄 Лицензия
-
-Этот проект лицензирован под MIT License.
-
-## 📞 Поддержка
-
-Для вопросов и поддержки обращайтесь:
-- Email: agtspb@inbox.ru
-- Телефон: +7 (931) 302-30-08
+🔥 Продакшн: https://печнойпроект.рф
+🧪 Демо без базы: https://pechnoyproekt.vercel.app
 
 ---
 
-**АкваГазТех** - Качественные трубы ПНД и комплектующие! 🔧✨
+## Что внутри
+
+| | |
+| --- | --- |
+| Публичных маршрутов | 17 |
+| Страниц админ-панели | 26 |
+| API route handlers | 76 |
+| Моделей Prisma | 31 |
+
+**Публичная часть:** главная с hero и калькулятором, `/catalog` с фильтром по категориям, `/portfolio` и его срезы `/portfolio/types/[slug]` и `/portfolio/kladka/[slug]`, `/arhitektura/[slug]`, `/project/[id]`, `/compare`, `/checkout/[projectId]` с `/checkout/success`, `/o-nas`, легальные `/privacy`, `/terms`, `/cookies`, вход и регистрация.
+
+**Контент в базе живёт по девяти направлениям** — камины, отопительные печи, русские печи, банные печи, каминопечи, мангалы, казан-барбекю, большие комплексы и калькулятор барбекю. У каждого направления свой сид-скрипт (см. `package.json`), поэтому наполнение можно пересобирать независимо.
+
+**Админка** (`/admin`, за NextAuth) ведёт каталог, секции и подобласти, hero, шапку, подвал, преимущества, FAQ, отзывы, этапы работ, SEO-тексты каталога, юридические тексты, метаданные сайта и заявки с форм.
+
+---
+
+## Стек
+
+- **Next.js 14.0.4** (App Router) + **React 18** + **TypeScript 5**
+- **Tailwind CSS 3.3**
+- **Prisma 6.18** + **PostgreSQL**
+- **NextAuth 4.24**, credentials-провайдер, пароли на **argon2**
+- **nodemailer** — письма с форм
+- **pdfkit**, **@react-pdf/renderer** и **puppeteer** — договоры и сметы в PDF
+- **zod 4** — валидация форм и API
+
+---
+
+## Скриншоты
+
+Сняты с продакшн-сайта, 1440×900 и 390×844.
+
+| Главная | Портфолио |
+| --- | --- |
+| ![Главная](.github/assets/home.jpg) | ![Портфолио](.github/assets/portfolio.jpg) |
+
+| Каталог | Мобильная версия |
+| --- | --- |
+| ![Каталог](.github/assets/catalog.jpg) | ![Мобильная](.github/assets/mobile.jpg) |
+
+---
+
+## Запуск локально
+
+```bash
+npm install
+cp .env.example .env      # заполнить DATABASE_URL, NEXTAUTH_SECRET, NEXTAUTH_URL
+npm run db:push           # схема в PostgreSQL
+npm run db:seed-full      # направления каталога + настройки блоков
+npm run dev
+```
+
+`NEXTAUTH_SECRET` генерируется через `openssl rand -base64 32`.
+
+Учётную запись администратора сид не создаёт — она заводится из окружения:
+
+```bash
+ADMIN_EMAIL=you@example.com ADMIN_PASSWORD='strong-password' npx tsx scripts/create-super-admin.ts
+```
+
+Ни адрес сервера, ни логин с паролем в репозитории не хранятся: скрипты создания и обновления админа читают только `ADMIN_EMAIL` и `ADMIN_PASSWORD` и падают с внятным сообщением, если их нет.
+
+---
+
+## Про демо на Vercel
+
+Демо развёрнуто **без базы данных**, и это его главное ограничение: `lib/prisma.ts` строит `PrismaClient` безусловно, а запросы к CMS-блокам обёрнуты в `.catch(() => null)`. Без `DATABASE_URL` страница отдаёт 200 на код-дефолтах, но каталог, отзывы, калькулятор и тексты блоков остаются пустыми — на главной без базы 1423 символа текста против 5406 на проде, и 10 из 12 контентных API отвечают 500.
+
+Чтобы демо было наполненным, нужно указать проекту `DATABASE_URL` на любой PostgreSQL и прогнать `npm run db:push && npm run db:seed-full` против него.
+
+---
+
+## Деплой
+
+**Vercel:** фреймворк определяется автоматически, `postinstall` вызывает `prisma generate`. Нужны `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL` и `NEXT_PUBLIC_SITE_URL`.
+
+**VPS:** `deploy.sh` берёт адрес и путь из окружения и ничего не хранит в себе:
+
+```bash
+SERVER_IP=... SERVER_DIR=/var/www/pechnoyproekt SSH_KEY=./deploy_key ./deploy.sh
+```
+
+На сервере процесс висит под PM2 (`ecosystem.config.cjs`) за nginx, установка окружения описана в `setup_server.sh`.
+
+---
+
+## Структура
+
+```
+pechnoyproekt/
+├── app/
+│   ├── api/                  # 76 route handlers: публичные + /api/admin/*
+│   ├── admin/                # 26 страниц панели контента
+│   ├── catalog/ portfolio/ arhitektura/ project/ checkout/ compare/
+│   ├── auth/ profile/ o-nas/ cookies/ privacy/ terms/
+│   └── layout.tsx            # мета, JSON-LD, шапка и подвал
+├── components/               # Hero, Calculator, ProjectsCatalog, ReviewsGallery, FAQ, Footer...
+├── lib/                      # prisma, auth, metadata, email, calc-data, parser-data, slug
+├── prisma/                   # schema.prisma (31 модель) и seed.ts
+├── scripts/                  # сиды по направлениям и обслуживание админов
+└── public/                   # изображения и загруженные из админки файлы
+```
