@@ -15,7 +15,7 @@ export async function GET() {
       // Создаем дефолтную конфигурацию если её нет
       config = await prisma.heroConfig.create({
         data: {
-          heroImage: '/images/main.png',
+          heroImage: '/images/main.jpg',
           title: 'Трубы ПНД и комплектующие для инженерных систем',
           subtitle: 'Надёжно. Выгодно. С гарантией качества.'
         }
@@ -50,14 +50,14 @@ export async function POST(req: Request) {
       ? await prisma.heroConfig.update({
           where: { id: existingConfig.id },
           data: {
-            heroImage: heroImage || '/images/main.png',
+            heroImage: heroImage || '/images/main.jpg',
             title: title || 'Трубы ПНД и комплектующие для инженерных систем',
             subtitle: subtitle || 'Качественные материалы. Быстрая доставка. Надёжные решения.'
           }
         })
       : await prisma.heroConfig.create({
           data: {
-            heroImage: heroImage || '/images/main.png',
+            heroImage: heroImage || '/images/main.jpg',
             title: title || 'Трубы ПНД и комплектующие для инженерных систем',
             subtitle: subtitle || 'Качественные материалы. Быстрая доставка. Надёжные решения.'
           }

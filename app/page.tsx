@@ -22,7 +22,7 @@ const FAQ = dynamic(() => import('@/components/FAQ'), {
 })
 
 const defaultHeroConfig = {
-  heroImage: '/images/main.png',
+  heroImage: '/images/main.jpg',
   title: 'Каталог продукции и услуг',
   subtitle: 'Надёжно. Выгодно. С гарантией качества.'
 }
