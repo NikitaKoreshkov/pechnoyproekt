@@ -10,8 +10,12 @@ const prisma = new PrismaClient()
 
 async function createAdmin() {
   try {
-    const email = process.env.ADMIN_EMAIL || 'admin@example.com'
-    const password = process.env.ADMIN_PASSWORD || 'REDACTED-IN-HISTORY'
+    const email = process.env.ADMIN_EMAIL
+    const password = process.env.ADMIN_PASSWORD
+    if (!email || !password) {
+      console.error('Set ADMIN_EMAIL and ADMIN_PASSWORD before running this script.')
+      process.exit(1)
+    }
     const name = process.env.ADMIN_NAME || 'Администратор'
 
     console.log('🔄 Создаю администратора...')

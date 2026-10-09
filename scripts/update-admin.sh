@@ -21,8 +21,12 @@ import argon2 from 'argon2'
 const prisma = new PrismaClient()
 
 async function main() {
-  const email = 'admin@example.com'
-  const password = 'REDACTED-IN-HISTORY'
+  const email = process.env.ADMIN_EMAIL
+  const password = process.env.ADMIN_PASSWORD
+  if (!email || !password) {
+    console.error('Set ADMIN_EMAIL and ADMIN_PASSWORD before running this script.')
+    process.exit(1)
+  }
   
   console.log('Обновляю администратора:', email)
   
@@ -67,5 +71,3 @@ ENDSSH
 
 echo ""
 echo "✅ Данные администратора обновлены!"
-echo "📝 Email: admin@example.com"
-echo "📝 Пароль: REDACTED-IN-HISTORY"

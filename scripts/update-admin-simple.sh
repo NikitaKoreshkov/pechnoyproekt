@@ -1,36 +1,41 @@
 #!/bin/bash
-# Простая команда для обновления администратора
-# Запустите ЛОКАЛЬНО: ./scripts/update-admin-simple.sh
+# Обновляет SUPER_ADMIN на боевом сервере.
+# Запустите ЛОКАЛЬНО: ADMIN_EMAIL=... ADMIN_PASSWORD=... ./scripts/update-admin-simple.sh
+#
+# Все параметры окружения обязательны: скрипт больше не хранит ни чужой IP,
+# ни путь, ни логин с паролем.
+
+set -euo pipefail
 
 cd "$(dirname "$0")/.."
-SSH_KEY="./aquagazteh_key"
-SERVER="root@89.111.152.195"
-REMOTE="/var/www/aquagazteh"
 
-echo "🔐 Обновляю данные главного администратора..."
+: "${SSH_KEY:?set SSH_KEY (path to the deploy key)}"
+: "${SERVER:?set SERVER (user@host)}"
+: "${REMOTE:?set REMOTE (project directory on the server)}"
+: "${ADMIN_EMAIL:?set ADMIN_EMAIL}"
+: "${ADMIN_PASSWORD:?set ADMIN_PASSWORD}"
 
-ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no "$SERVER" "cd $REMOTE && node -e \"
+echo "Обновляю данные главного администратора..."
+
+ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no "$SERVER" "cd $REMOTE && ADMIN_EMAIL=\"$ADMIN_EMAIL\" ADMIN_PASSWORD=\"$ADMIN_PASSWORD\" node -e \"
 const { PrismaClient } = require('@prisma/client');
 const argon2 = require('argon2');
 const prisma = new PrismaClient();
 
 (async () => {
   try {
-    const email = 'admin@example.com';
-    const password = 'REDACTED-IN-HISTORY';
+    const email = process.env.ADMIN_EMAIL;
+    const password = process.env.ADMIN_PASSWORD;
     const passwordHash = await argon2.hash(password);
-    
+
     const user = await prisma.user.upsert({
       where: { email: email.toLowerCase() },
       update: { role: 'SUPER_ADMIN', isActive: true, passwordHash },
       create: { email: email.toLowerCase(), passwordHash, isActive: true, role: 'SUPER_ADMIN', name: 'admin' }
     });
-    
-    console.log('✅ Администратор обновлен:', user.email);
-    
-    await prisma.user.deleteMany({ where: { email: 'a@gmail.com' } });
-    console.log('✅ Старые тестовые админы удалены');
-    
+
+    console.log('Администратор обновлён:', user.email);
+
     await prisma.\$disconnect();
   } catch (e) {
     console.error('Ошибка:', e);
@@ -39,7 +44,4 @@ const prisma = new PrismaClient();
 })();
 \""
 
-echo ""
-echo "✅ Готово! Данные администратора обновлены."
-echo "📝 Email: admin@example.com"
-echo "📝 Пароль: REDACTED-IN-HISTORY"
+echo "Готово."

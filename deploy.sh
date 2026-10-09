@@ -4,13 +4,15 @@
 
 set -e
 
-SERVER_IP="168.222.193.132"
-SERVER_USER="root"
-SERVER_DIR="/var/www/site"
+# Сервер задаётся окружением, чтобы адрес и путь не светились в репозитории:
+#   SERVER_IP=... SERVER_DIR=... SSH_KEY=./deploy_key ./deploy.sh
+SERVER_IP="${SERVER_IP:?set SERVER_IP (host of the app)}"
+SERVER_USER="${SERVER_USER:-root}"
+SERVER_DIR="${SERVER_DIR:?set SERVER_DIR (project directory on the server)}"
 LOCAL_DIR="."
-# Приватный ключ для доступа к серверу (создан в проекте: trybi_key / trybi_key.pub)
-# Публичный ключ нужно добавить в панель хостинга (SSH-ключи).
-SSH_KEY="${SSH_KEY:-./trybi_key}"
+# Приватный ключ для доступа к серверу; публичный должен быть добавлен
+# в панель хостинга в раздел SSH-ключей.
+SSH_KEY="${SSH_KEY:-./deploy_key}"
 
 echo "🚀 Начинаю деплой проекта..."
 
