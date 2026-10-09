@@ -77,3 +77,7 @@ next-env.d.ts
 /generated/prisma
 
 /generated/prisma
+
+# 1.68 MB PNG the JPEG hero replaces; kept on the server because the
+# production database may still store /images/main.png as heroImage
+/public/images/main.png
